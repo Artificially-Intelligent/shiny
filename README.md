@@ -54,6 +54,7 @@ Container images are configured using parameters passed at runtime (such as thos
 
 ## Preinstalled Packages
 
+
 * aws.s3
 * caret
 * data.table
@@ -111,3 +112,13 @@ Container images are configured using parameters passed at runtime (such as thos
 * writexl
 * xgboost
 * xts
+
+## Troubleshooting
+
+Run package, start shiny-server and view logs
+ docker run -it -p 3838:3838 -e PORT=3838 --name shiny artificiallyintelligent/shiny:latest /bin/bash
+ setsid /usr/bin/shiny-server.sh >/dev/null 2>&1 < /dev/null &
+ cat /var/log/shiny-server/code-shiny-*
+
+Check disc space available for temp files
+ df -h /tmp
