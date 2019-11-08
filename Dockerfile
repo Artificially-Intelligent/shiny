@@ -18,8 +18,8 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libmagick++-dev \
         libudunits2-dev \
         libgdal-dev \
-        tcl8.5-dev \
-        tk8.5-dev
+        tcl8.6-dev \
+        tk8.6-dev
 
 
 ## create directories

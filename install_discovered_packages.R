@@ -1,7 +1,7 @@
 library(readr); 
 
 preinstalled_packages_csv <- list.files(pattern = "preinstalled_packages.csv$", recursive = TRUE)[1]
-preinstalled_packages <- read_csv(preinstalled_packages_csv)[[1]]
+preinstalled_packages <- read_csv(preinstalled_packages_csv)[["packages"]]
 
 r_files <- list.files(pattern = ".R$", recursive = TRUE)
 r_files <- r_files[!grepl("install_discovered_packages.R", r_files)]
