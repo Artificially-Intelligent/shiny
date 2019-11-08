@@ -1,63 +1,62 @@
 packages,category
-tcltk,
-devtools,
-summarytools,
-readxl,
-DT,
-data.table,
-dygraphs,
-formattable,
-scales,
-shinycssloaders,
-shinydashboard,
-shiny,
-shinyjs,
-shinyWidgets,
-tidyverse,
-magrittr,
-lubridate,
-vtreat,
-xgboost,
-skimr,
-xts,
-plotly,
-forcats,
-highcharter,
-purrr,
-shinydashboardPlus,
-leaflet,
-timevis,
-sf,
-leaflet.extras,
-writexl,
-wkb,
-shinycssloaders,
-readr,
-DataExplorer,
-dplyr,
-rpart,
-rpart.plot,
-rattle,
-Metrics,
-ipred,
-caret,
-randomForest,
-magick,
-httr,
-jsonlite,
-RMySQL,
-DBI,
-aws.s3,
-glue,
-janitor,
-pool,
-googleAuthR,
-dotenv,
-slackr,
-tibbletime,
-tmaptools,
-auth0,
-shinyjqui,
-shinyAce,
-styler,
-shinyEffects,
+purrr,package collection
+rattle,package collection
+tidyverse,package collection
+devtools,environment setup
+dotenv,environment setup
+magrittr,environment setup
+DataExplorer,data analysis
+aws.s3,data connectivity
+DBI,data connectivity
+httr,data connectivity
+pool,data connectivity
+readr,data connectivity
+readxl,data connectivity
+RMySQL,data connectivity
+slackr,data connectivity
+writexl,data connectivity
+caret,data prediction
+ipred,data prediction
+Metrics,data prediction
+randomForest,data prediction
+rpart,data prediction
+rpart.plot,data prediction
+vtreat,data prediction
+xgboost,data prediction
+DT,data presentation
+dygraphs,data presentation
+formattable,data presentation
+highcharter,data presentation
+plotly,data presentation
+scales,data presentation
+skimr,data presentation
+styler,data presentation
+timevis,data presentation
+tmaptools,data presentation
+data.table,data processing
+dplyr,data processing
+forcats,data processing
+glue,data processing
+janitor,data processing
+jsonlite,data processing
+lubridate,data processing
+magick,data processing
+sf,data processing
+summarytools,data processing
+tibbletime,data processing
+wkb,data processing
+xts,data processing
+auth0,web ui
+googleAuthR,web ui
+leaflet,web ui
+leaflet.extras,web ui
+shiny,web ui
+shinyAce,web ui
+shinycssloaders,web ui
+shinycssloaders,web ui
+shinydashboard,web ui
+shinydashboardPlus,web ui
+shinyEffects,web ui
+shinyjqui,web ui
+shinyjs,web ui
+shinyWidgets,web ui
