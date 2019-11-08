@@ -43,7 +43,7 @@ COPY shiny-server.sh /usr/bin/shiny-server.sh
 
 
 ## install R-packages
-RUN Rscript -e "install.packages('readr'); library(readr); lapply(read_csv('/etc/shiny-server/preinstalled_packages.csv')[[1]] install.packages, character.only = TRUE)"
+RUN Rscript -e "install.packages('readr'); library(readr); lapply(read_csv('/etc/shiny-server/preinstalled_packages.csv')[[1]], install.packages, character.only = TRUE)"
 
 
 ## start shiny server
