@@ -35,15 +35,17 @@ RUN mkdir -p /data ; \
 
 
 ## copy files
-COPY preinstalled_packages /etc/shiny-server/preinstalled_packages.csv
+
+COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
+COPY preinstalled_packages.csv /etc/shiny-server/preinstalled_packages.csv
 COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
 COPY shiny-server.sh /usr/bin/shiny-server.sh
 
 
 ## install R-packages
-RUN Rscript -e "library(readr); lapply(read_csv('/etc/shiny-server/preinstalled_packages.csv')[[1]] install.packages, character.only = TRUE)"
+RUN Rscript -e "install.packages('readr'); library(readr); lapply(read_csv('/etc/shiny-server/preinstalled_packages.csv')[[1]] install.packages, character.only = TRUE)"
 
 
 ## start shiny server
 EXPOSE $PORT
-RUN chmod +x /usr/bin/shiny-server.sh
+RUN chmod +x /usr/bin/shiny-server.sh 

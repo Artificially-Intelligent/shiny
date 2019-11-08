@@ -4,6 +4,14 @@
 mkdir -p /var/log/shiny-server
 chown shiny.shiny /var/log/shiny-server
 
+if[ "$DISCOVER_PACKAGES" = "false" ];
+then
+    echo "DISCOVER_PACKAGES = false, Using preinstalled packages only"
+else
+    # scan files in /02_code for required libraries and install missing packages
+    Rscript /etc/shiny-server/install_discovered_packages.R
+fi
+
 if [ "$APPLICATION_LOGS_TO_STDOUT" = "false" ];
 then
     exec shiny-server 2>&1
