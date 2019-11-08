@@ -1,7 +1,7 @@
 # [Artificially-Intelligent/shiny](https://github.com/Artificially-Intelligent/shiny)
 
 ## Description
-rocker/rbase docker image with a selection of packages preinstalled geared to support R-Shiny based webapps.
+rocker/rbase docker image with a selection of packages preinstalled geared to support R-Shiny based webapps. Also come with option to install additional packages at cotainer startup for packages refrenced by a library('package') statment within any *.R file copied/mounted into container.  
 
 ## Usage
 
@@ -46,6 +46,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e PUID=1000` | for UserID - see below for explanation |
 | `-e PGID=1000` | for GroupID - see below for explanation |
 | `-e TZ=Europe/London` | Specify a timezone to use EG Europe/London. |
+| `-e DISCOVER_PACKAGES=true` | If set to false, missing package discovery and nstallation is disabled. |
 | `-v /01_input` | Placeholder folder for source data mapping. R-Shiny apps can map to this location using ../01_input|
 | `-v /02_code` | The web root for shiny. R shiny code reside here. |
 | `-v /04_output` | Placeholder folder for output data storage. R-Shiny apps can map to this location using ../04_output|
@@ -54,6 +55,7 @@ Container images are configured using parameters passed at runtime (such as thos
 
 ## Preinstalled Packages
 
+see [preinstalled_packages.csv](https://github.com/Artificially-Intelligent/shiny/blob/master/preinstalled_packages.csv) for full list
 
 * aws.s3
 * caret
