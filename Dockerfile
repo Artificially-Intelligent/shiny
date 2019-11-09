@@ -4,6 +4,7 @@ FROM rocker/shiny
 ## shiny server port
 ARG PORT=3838
 
+
 ## install debian packages
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libxml2-dev \
@@ -16,10 +17,10 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libcurl4-openssl-dev \
 	libssl-dev \
 	libmagick++-dev \
-        libudunits2-dev \
-        libgdal-dev \
-        tcl8.6-dev \
-        tk8.6-dev
+	libudunits2-dev \
+	libgdal-dev \
+	tcl8.6-dev \
+	tk8.6-dev
 
 
 ## create directories

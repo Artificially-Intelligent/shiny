@@ -12,6 +12,7 @@ Here are some example snippets to help you get started creating a container.
 docker create \
   --name=myshinyapp \
   -p 3838:3838 \
+  -e DISCOVER_PACKAGES=true \
   -v path/to/data/source:/01_input \
   -v path to code:/02_code \
   -v path/to/data/output:/04_output \
@@ -28,12 +29,15 @@ services:
   radarr:
     image: slink42/rbase_shiny
     container_name: myshinyapp
+    environment:
+      - DISCOVER_PACKAGES=true
+      - PORT=4848
     volumes:
       - path/to/data/source:/01_input
       - path to code:/02_code
       - path/to/data/output:/04_output
     ports:
-      - 3838:3838
+      - 4848:4848
     restart: unless-stopped
 
 ## Parameters
@@ -42,78 +46,21 @@ Container images are configured using parameters passed at runtime (such as thos
 
 | Parameter | Function |
 | :----: | --- |
-| `-p 3838` | Http port |
+| `-p 3838:3838` | Specify a port mapping from container to host for shiny server web ui. Port value after the : should match that defined by PORT environment variable or the default value 3838 |
+| `-e PORT=3838` | Specify a port for shiny to use inside the container. Included to support deployment to google cloud run. If not set default value is 3838 |
 | `-e PUID=1000` | for UserID - see below for explanation |
 | `-e PGID=1000` | for GroupID - see below for explanation |
 | `-e TZ=Europe/London` | Specify a timezone to use EG Europe/London. |
-| `-e DISCOVER_PACKAGES=true` | If set to false, missing package discovery and nstallation is disabled. |
-| `-v /01_input` | Placeholder folder for source data mapping. R-Shiny apps can map to this location using ../01_input|
+| `-e DISCOVER_PACKAGES=true` | Set true to have  *.R files in /code & /02_code directories + subdirectories scanned for library(package) entries. Missing package will be installed as part of contrianer startup. |
+| `-v /01_input` | Placeholder folder for source data mapping. R-Shiny apps can map to this location using ../01_input |
 | `-v /02_code` | The web root for shiny. R shiny code reside here. |
-| `-v /04_output` | Placeholder folder for output data storage. R-Shiny apps can map to this location using ../04_output|
-| `-v /05_logs` | Placeholder folder for log file output. R-Shiny apps can map to this location using ../05_logs|
+| `-v /04_output` | Placeholder folder for output data storage. R-Shiny apps can map to this location using ../04_output |
+| `-v /05_logs` | Placeholder folder for log file output. R-Shiny apps can map to this location using ../05_logs |
 
 
 ## Preinstalled Packages
 
-see [preinstalled_packages.csv](https://github.com/Artificially-Intelligent/shiny/blob/master/preinstalled_packages.csv) for full list
-
-* aws.s3
-* caret
-* data.table
-* DataExplorer
-* DBI
-* devtools
-* dotenv
-* dplyr
-* DT
-* dygraphs 
-* forcats
-* formattable
-* glue
-* googleAuthR
-* highcharter
-* httr
-* ipred
-* janitor
-* jsonlite
-* leaflet
-* leaflet.extras
-* lubridate
-* magick
-* magrittr
-* Metrics
-* plotly
-* pool
-* purrr
-* randomForest
-* rattle
-* readr
-* readxl
-* RMySQL
-* rpart
-* rpart.plot
-* scales #
-* sf
-* shiny
-* shinycssloaders
-* shinycssloaders
-* shinydashboard
-* shinydashboardPlus
-* shinyjs
-* shinyWidgets
-* skimr
-* slackr
-* summarytools
-* tcltk
-* tibbletime
-* tidyverse
-* timevis
-* tmaptools
-* vtreat
-* wkb
-* writexl
-* xgboost
-* xts
+See [preinstalled_packages.csv](https://github.com/Artificially-Intelligent/shiny/blob/master/preinstalled_packages.csv) for full list of packages currently included.
 
 ## Troubleshooting
 
