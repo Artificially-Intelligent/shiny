@@ -3,8 +3,10 @@ library(readr);
 preinstalled_packages_csv <- list.files(pattern = "preinstalled_packages.csv$", recursive = TRUE)[1]
 preinstalled_packages <- read_csv(preinstalled_packages_csv)[["packages"]]
 
-r_files <- list.files(pattern = ".R$", recursive = TRUE)
-r_files <- r_files[!grepl("install_discovered_packages.R", r_files)]
+root_folders <- list.files()
+code_folders <-  root_folders[grepl("\\S*code\\S*", root_folders)]
+
+r_files <- list.files(path = code_folders, pattern = "*.R$", recursive = TRUE,full.names = TRUE)
 
 discovered_packages <- c()
 for(file in r_files){
