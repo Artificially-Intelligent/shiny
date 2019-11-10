@@ -9,6 +9,9 @@ if [[ -z "${PORT}" ]]; then
   PORT=3838
 fi
 
+#Substitute ENV variable values into shiny-server.conf
+envsubst < /etc/shiny-server/shiny-server.conf.tmpl >  /etc/shiny-server/shiny-server.conf
+
 if [ "$DISCOVER_PACKAGES" = "true" ];
 then
     # scan files in /02_code for required libraries and install missing packages
