@@ -4,8 +4,8 @@
 mkdir -p /var/log/shiny-server
 chown shiny.shiny /var/log/shiny-server
 
-if [[ -z "${PORT}" ]]; then
-  echo "PORT not specified, using derfault value 3838"
+if [ -z "${PORT}" ]; then
+  echo "PORT not specified, using default value 3838"
   PORT=3838
 fi
 
