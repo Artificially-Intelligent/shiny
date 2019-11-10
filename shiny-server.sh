@@ -4,12 +4,17 @@
 mkdir -p /var/log/shiny-server
 chown shiny.shiny /var/log/shiny-server
 
+if [[ -z "${PORT}" ]]; then
+  echo "PORT not specified, using derfault value 3838"
+  PORT=3838
+fi
+
 if [ "$DISCOVER_PACKAGES" = "true" ];
 then
     # scan files in /02_code for required libraries and install missing packages
     exec Rscript /etc/shiny-server/install_discovered_packages.R
 else
-    echo "DISCOVER_PACKAGES = false, Using preinstalled packages only"
+    echo "DISCOVER_PACKAGES != true, Using preinstalled packages only"
 fi
 
 if [ "$APPLICATION_LOGS_TO_STDOUT" = "false" ];
