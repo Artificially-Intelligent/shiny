@@ -60,7 +60,7 @@ Container images are configured using parameters passed at runtime (such as thos
 
 ## Preinstalled Packages
 
-See [preinstalled_packages.csv](https://github.com/Artificially-Intelligent/shiny/blob/master/preinstalled_packages.csv) for full list of packages currently included.
+See [default_install_packages.csv](https://github.com/Artificially-Intelligent/shiny/blob/master/default_install_packages.csv) for full list of packages currently included by default.
 
 ## Troubleshooting
 
