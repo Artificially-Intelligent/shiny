@@ -20,7 +20,8 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libudunits2-dev \
 	libgdal-dev \
 	tcl8.6-dev \
-	tk8.6-dev
+	tk8.6-dev \
+	gettext-base
 
 
 ## create directories
@@ -39,7 +40,7 @@ RUN mkdir -p /data ; \
 
 COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
 COPY preinstalled_packages.csv /etc/shiny-server/preinstalled_packages.csv
-COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
+COPY shiny-server.conf.tmpl /etc/shiny-server/shiny-server.conf.tmpl
 COPY shiny-server.sh /usr/bin/shiny-server.sh
 
 
