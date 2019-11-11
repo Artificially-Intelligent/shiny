@@ -57,6 +57,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-v /04_output` | Placeholder folder for output data storage. R-Shiny apps can map to this location using ../04_output |
 | `-v /05_logs` | Placeholder folder for log file output. R-Shiny apps can map to this location using ../05_logs |
 
+
 ## Preinstalled Packages
 
 See [default_install_packages.csv](https://github.com/Artificially-Intelligent/shiny/blob/master/default_install_packages.csv) for full list of packages currently included by default.
