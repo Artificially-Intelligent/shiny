@@ -1,5 +1,8 @@
-install.packages('readr',quite = TRUE);
-library(readr); 
+list.of.packages <- c("readr")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages, quiet = TRUE)
+library(readr);
+
 
 discover_and_install <- function(default_packages_csv, discovery_directory_root = '/02_code', discovery = FALSE){
   
@@ -41,9 +44,10 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
     }
     print(paste("Packages discovered in *.R files: (", paste(discovered_packages, collapse = ",") , ")",sep = ""))
   }
-  
-  packages_to_install <- unique(setdiff(c(default_packages, discovered_packages), previously_installed_packages))
-  
+
+  packages_to_install <- unique(c(default_packages, discovered_packages))
+  packages_to_install <- packages_to_install[!(packages_to_install %in% installed.packages()[,"Package"])]
+
   if(length(packages_to_install)>0){
     print(paste("Packages to be installed (", paste(packages_to_install, collapse = ",")   , ")" ,sep = ""))
     for(package_name in packages_to_install){
@@ -51,7 +55,7 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
         {
           print(paste("Installing package: ", package_name ,sep = ""))
           install.packages(package_name, 
-                          # dependencies = c("Depends", "Imports"),
+                           dependencies = TRUE,
                            quiet = TRUE)
           write.table(package_name, file=installed_packages_csv, row.names=FALSE, col.names=FALSE, sep=",", append = TRUE)
         },FALSE
@@ -61,4 +65,3 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
     print("There are no packages to be installed")
   }
 }
-
