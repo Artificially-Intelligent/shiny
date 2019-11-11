@@ -39,14 +39,14 @@ RUN mkdir -p /data ; \
 ## copy files
 
 COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
-COPY preinstalled_packages.csv /etc/shiny-server/preinstalled_packages.csv
+COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
 COPY shiny-server.conf.tmpl /etc/shiny-server/shiny-server.conf.tmpl
 COPY shiny-server.sh /usr/bin/shiny-server.sh
 
 
 ## install R-packages
-RUN Rscript -e "install.packages('readr'); library(readr); lapply(read_csv('/etc/shiny-server/preinstalled_packages.csv')[[1]], install.packages, character.only = TRUE)"
-
+#RUN Rscript -e "install.packages('readr'); library(readr); lapply(read_csv('/etc/shiny-server/preinstalled_packages.csv')[[1]], install.packages, character.only = TRUE)"
+RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '/02_code', discovery = FALSE);"
 
 ## start shiny server
 EXPOSE $PORT
