@@ -11,7 +11,7 @@ Here are some example snippets to help you get started creating a container.
 
 docker create \
   --name=myshinyapp \
-  -p 3838:3838 \
+  -p 8080:8080 \
   -e DISCOVER_PACKAGES=true \
   -v path/to/data/source:/01_input \
   -v path to code:/02_code \
@@ -46,8 +46,9 @@ Container images are configured using parameters passed at runtime (such as thos
 
 | Parameter | Function |
 | :----: | --- |
-| `-p 3838:3838` | Specify a port mapping from container to host for shiny server web ui. Port value after the : should match that defined by PORT environment variable or the default value 3838 |
-| `-e PORT=3838` | Specify a port for shiny to use inside the container. Included to support deployment to google cloud run. If not set default value is 3838 |
+| `-p 3838:8080` | Specify a port mapping from container to host for shiny server web ui. Port value after the : should match that defined by PORT environment variable or the default value 8080 |
+| `-e PORT=8080` | Specify a port for shiny to use inside the container. Included to support deployment to google cloud run. If not set default value is 8080 |
+| `-e SHINYCODE_GITHUB_REPO=https://github.com/mygithubuser/mygithubrepo.git` | Specifiy a url for a github repo to copy to code directory at container runtime. Note only supports https, not ssh. Private repo can be added by including an access token in the url eg. https://myaccesstoken@github.com/mygithubuser/mygithubrepo.git | 
 | `-e PUID=1000` | for UserID - see below for explanation |
 | `-e PGID=1000` | for GroupID - see below for explanation |
 | `-e TZ=Europe/London` | Specify a timezone to use EG Europe/London. |

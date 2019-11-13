@@ -4,9 +4,17 @@
 mkdir -p /var/log/shiny-server
 chown shiny.shiny /var/log/shiny-server
 
+CODE_DIR=/02_code
+
 if [ -z "${PORT}" ]; then
-  echo "PORT not specified, using default value 3838"
-  export PORT=3838
+  echo "PORT not specified, using default value 8080"
+  export PORT=8080
+fi
+
+if [ ! -z "${SHINYCODE_GITHUB_REPO}" ];
+then
+    echo "Copying contentes of github repo $SHINYCODE_GITHUB_REPO to $CODE_DIR"
+    git clone $SHINYCODE_GITHUB_REPO $CODE_DIR
 fi
 
 #Substitute ENV variable values into shiny-server.conf
@@ -14,10 +22,10 @@ envsubst < /etc/shiny-server/shiny-server.conf.tmpl >  /etc/shiny-server/shiny-s
 
 if [ "$DISCOVER_PACKAGES" = "true" ];
 then
-    # scan files in /02_code for required libraries and install missing packages
+    # scan files in $CODE_DIR for required libraries and install missing packages
     ## install R-packages
-    #Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(preinstalled_packages_csv = '/etc/shiny-server/preinstalled_packages.csv',r_search_root = '/02_code'); "
-	Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '/02_code', discovery = TRUE);"
+    #Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(preinstalled_packages_csv = '/etc/shiny-server/preinstalled_packages.csv',r_search_root = '$CODE_DIR'); "
+	Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '$CODE_DIR', discovery = TRUE);"
 else
     echo "DISCOVER_PACKAGES != true, Using preinstalled packages only"
 fi
