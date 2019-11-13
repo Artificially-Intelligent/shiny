@@ -35,7 +35,7 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
  	&& ln -s /tmp /03_staging \
  	&& mkdir -p /04_output \
  	&& mkdir -p /var/log/shiny-server \
- 	&& ln -s /var/log/shiny-server /05_logs \
+ 	&& ln -s /var/log/shiny-server /05_logs
 
 ## copy config files
 COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
