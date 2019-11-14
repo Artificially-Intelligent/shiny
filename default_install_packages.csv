@@ -1,7 +1,7 @@
 packages,category
 purrr,package collection
-rattle,package collection
 tidyverse,package collection
+rattle,package collection
 devtools,environment setup
 dotenv,environment setup
 magrittr,environment setup
@@ -46,6 +46,11 @@ summarytools,data processing
 tibbletime,data processing
 wkb,data processing
 xts,data processing
+protolite,data processing
+V8,data processing
+jqr,data processing
+geojson,data processing
+geojsonio,data processing
 auth0,web ui
 googleAuthR,web ui
 leaflet,web ui
@@ -60,4 +65,3 @@ shinyEffects,web ui
 shinyjqui,web ui
 shinyjs,web ui
 shinyWidgets,web ui
-geojsonio,data processing

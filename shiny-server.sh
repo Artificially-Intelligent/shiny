@@ -6,9 +6,18 @@ chown shiny.shiny /var/log/shiny-server
 
 CODE_DIR=/02_code
 
+# Copy container ENV variables to .Reviron so they will be available to shiny
+RENV=/home/shiny/.Renviron
+printenv > $RENV
+
 if [ -z "${PORT}" ]; then
-  echo "PORT not specified, using default value 8080"
+  echo "PORT not specified, using default value: 8080"
   export PORT=8080
+fi
+
+if [ -z "${PUID}" ]; then
+   echo "PUID not specified, shiny server run as default value: shiny"
+  export PUID=shiny
 fi
 
 if [ ! -z "${SHINYCODE_GITHUB_REPO}" ];

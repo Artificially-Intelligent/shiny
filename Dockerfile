@@ -30,7 +30,7 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 ## create directories for mounting code / data
  	&& mkdir -p /data \
  	&& mkdir -p /01_input \
- 	&& mkdir -p /02_code \
+ 	&& mkdir -p /code \
  	&& mkdir -p /02_code \
  	&& ln -s /tmp /03_staging \
  	&& mkdir -p /04_output \
@@ -44,7 +44,7 @@ COPY shiny-server.conf.tmpl /etc/shiny-server/shiny-server.conf.tmpl
 COPY shiny-server.sh /usr/bin/shiny-server.sh
 
 ## install R-packages
-RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '/02_code', discovery = FALSE);" \
+RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '/02_code', discovery = FALSE);"
 	
 ## start shiny server
 RUN chmod +x /usr/bin/shiny-server.sh 
