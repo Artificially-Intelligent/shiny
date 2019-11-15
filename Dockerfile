@@ -15,9 +15,19 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libmagick++-dev \
 	libudunits2-dev \
 	libgdal-dev \
-	tcl8.6-dev \
-	tk8.6-dev \
+	# for R package summarytools
+	tcl8.6-dev tk8.6-dev \ 
+	# for R package V8
+	libv8-dev \
+	# for R package jqr
+	libjq-dev \
+	# for R package jqr
+	libprotobuf-dev \
+	# for R package protolite
+	libprotobuf-dev protobuf-compiler \
+	# for envsubst
 	gettext-base \
+	# for git clone
 	git \
  	&& cd / \
 	&& apt-get clean all \
@@ -44,7 +54,9 @@ COPY shiny-server.conf.tmpl /etc/shiny-server/shiny-server.conf.tmpl
 COPY shiny-server.sh /usr/bin/shiny-server.sh
 
 ## install R-packages
-RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '/02_code', discovery = FALSE);"
+RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '/02_code', discovery = FALSE);" \
+&& rm -rf /tmp/*
+	
 	
 ## start shiny server
 RUN chmod +x /usr/bin/shiny-server.sh 
