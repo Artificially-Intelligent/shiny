@@ -53,11 +53,15 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
     for(package_name in packages_to_install){
       try(
         {
-          print(paste("Installing package: ", package_name ,sep = ""))
-          install.packages(package_name, 
-                           dependencies = TRUE,
-                           quiet = TRUE)
-          write.table(package_name, file=installed_packages_csv, row.names=FALSE, col.names=FALSE, sep=",", append = TRUE)
+          if(length(package_name[!(package_name %in% installed.packages()[,"Package"])]) > 0){
+            print(paste("Installing package: ", package_name ,sep = ""))
+            install.packages(package_name, 
+                             dependencies = TRUE,
+                             quiet = TRUE)
+            write.table(package_name, file=installed_packages_csv, row.names=FALSE, col.names=FALSE, sep=",", append = TRUE)
+          }else{
+            print(paste("Skipping previously installed package: ", package_name ,sep = ""))
+          }
         },FALSE
       )
     }
