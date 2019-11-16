@@ -15,12 +15,6 @@ if [ -z "${PORT}" ]; then
   export PORT=8080
 fi
 
-if [ ! -z "${SHINYCODE_GITHUB_REPO}" ];
-then
-    echo "Copying contentes of github repo $SHINYCODE_GITHUB_REPO to $CODE_DIR"
-    git clone $SHINYCODE_GITHUB_REPO $CODE_DIR
-fi
-
 if [ "$DISCOVER_PACKAGES" = "true" ];
 then
     # scan files in $CODE_DIR for required libraries and install missing packages
@@ -41,6 +35,12 @@ chown -R /01_input $PUID
 chown -R /02_code $PUID
 chown -R /04_output $PUID
 chown -R /var/log/shiny-server $PUID
+
+if [ ! -z "${SHINYCODE_GITHUB_REPO}" ];
+then
+    echo "Copying contentes of github repo $SHINYCODE_GITHUB_REPO to $CODE_DIR"
+    /bin/su -c "git clone $SHINYCODE_GITHUB_REPO $CODE_DIR"  -  $PUID
+fi
 
 #Substitute ENV variable values into shiny-server.conf
 envsubst < /etc/shiny-server/shiny-server.conf.tmpl >  /etc/shiny-server/shiny-server.conf
