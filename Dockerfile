@@ -43,8 +43,11 @@ ARG REQUIRED_PACKAGES
 COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
 COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
 RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv');" \
-&& rm -rf /tmp/*
+	&& rm -rf /tmp/*
 
+## install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
+RUN R -e "remotes::install_github(c('rstudio/httpuv'))" \
+	&& rm -rf /tmp/*
 
 ## copy shiny config and start script
 COPY shiny-server.conf.tmpl /etc/shiny-server/shiny-server.conf.tmpl
@@ -54,26 +57,28 @@ RUN chmod +x /usr/bin/shiny-server.sh
 RUN chmod +x /usr/bin/entrypoint.sh 
 
 ## create directories for mounting shiny app code / data
-ARG PARENT_DIR=/shiny-server
+ARG PARENT_DIR=/svr/shiny
 ARG DATA_DIR=${PARENT_DIR}/data
-ARG CODE_DIR=${PARENT_DIR}/www
+ARG WWW_DIR=${PARENT_DIR}/www
 ARG TEMP_DIR=${PARENT_DIR}/staging
 ARG OUTPUT_DIR=${PARENT_DIR}/output
 ARG LOG_DIR=/var/log/shiny-server
 
 RUN mkdir -p $PARENT_DIR \
 	&& mkdir -p $DATA_DIR \
- 	&& mkdir -p $CODE_DIR \
+ 	&& mkdir -p $WWW_DIR \
  	&& ln -s /tmp $TEMP_DIR \
  	&& mkdir -p $OUTPUT_DIR \
  	&& mkdir -p $LOG_DIR \
 	&& chown $PUID.$PGID -R $PARENT_DIR 
-	
+
+
+
 ## start shiny server
 ENV REQUIRED_PACKAGES ${REQUIRED_PACKAGES}
 
 ENV DATA_DIR ${DATA_DIR}
-ENV CODE_DIR ${CODE_DIR}
+ENV WWW_DIR ${WWW_DIR}
 ENV TEMP_DIR ${TEMP_DIR}
 ENV OUTPUT_DIR ${OUTPUT_DIR}
 ENV LOG_DIR ${LOG_DIR} 

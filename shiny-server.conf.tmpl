@@ -1,6 +1,8 @@
 # Instruct Shiny Server to run applications as the user "shiny"
 run_as ${SHINY_USER};
 
+disable_protocols ${SHINY_DISABLE_PROTOCOLS};
+
 # Define a server that listens on port defined by ENV variable PORT, defaults to 3838
 server {
   listen ${PORT};

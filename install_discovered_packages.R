@@ -65,6 +65,8 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
             print(paste("Installing package: ", package_name ,sep = ""))
             install.packages(package_name, 
                              dependencies = TRUE,
+                             repos = 'https://cran.rstudio.com/', 
+                             method='wget',
                              quiet = TRUE)
             write.table(package_name, file=installed_packages_csv, row.names=FALSE, col.names=FALSE, sep=",", append = TRUE)
           }else{
