@@ -1,7 +1,7 @@
 # [Artificially-Intelligent/shiny](https://github.com/Artificially-Intelligent/shiny)
 
 ## Description
-rocker/rbase docker image with a selection of packages preinstalled geared to support R-Shiny based webapps. Also come with option to install additional packages at cotainer startup for packages refrenced by a library('package') statment within any *.R file copied/mounted into container.  
+rocker/rbase docker image with a selection of packages preinstalled geared to support R-Shiny based webapps. Also come with option to install additional packages at container startup for packages refrenced by a library('package') statment within any *.R file copied/mounted into container, or specified by environment variable REQUIRED_PACKAGES.  
 
 ## Usage
 
@@ -13,11 +13,13 @@ docker create \
   --name=myshinyapp \
   -p 8080:8080 \
   -e DISCOVER_PACKAGES=true \
-  -v path/to/data/source:/01_input \
-  -v path to code:/02_code \
-  -v path/to/data/output:/04_output \
+  -e REQUIRED_PACKAGES=shiny,readr \
+  -e SHINYCODE_GITHUB_REPO=https://github.com/rstudio/shiny-examples \
+  -v path/to/data_source:/01_input \
+  -v path/to/code:/02_code \
+  -v path/to/data_output:/04_output \
   --restart unless-stopped \
-  slink42/rbase_shiny
+  artificiallyintelligent/shiny
 
 ## docker-compose
 
@@ -27,16 +29,16 @@ Compatible with docker-compose v2 schemas.
   version: "2"
   services:
     shiny:
-      image: slink42/rbase_shiny
+      image: artificiallyintelligent/shiny
       container_name: myshinyapp
       environment:
         - DISCOVER_PACKAGES=true
         - PORT=4848
         - SHINYCODE_GITHUB_REPO=https://github.com/rstudio/shiny-examples
       volumes:
-        - path/to/data/source:/01_input
-        - path to code:/02_code
-        - path/to/data/output:/04_output
+        - path/to/data_source:/01_input
+        - path/to/code:/02_code
+        - path/to/data_output:/04_output
       ports:
         - 4848:4848
       restart: unless-stopped
@@ -50,12 +52,12 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-p 3838:8080` | Specify a port mapping from container to host for shiny server web ui. Port value after the : should match that defined by PORT environment variable or the default value 8080 |
 | `-e PORT=8080` | Specify a port for shiny to use inside the container. Included to support deployment to google cloud run. If not set default value is 8080 |
 | `-e SHINYCODE_GITHUB_REPO=https://github.com/rstudio/shiny-examples` | Specifiy a url for a github repo to copy to code directory at container runtime. Note only supports https, not ssh. Private repo can be added by including an access token in the url eg. https://myaccesstoken@github.com/mygithubuser/mygithubrepo.git | 
-| `-e PUID=shiny` | Specify the user to run shiny server as. Defaults to shiny if not supplied |
-| `-e DISCOVER_PACKAGES=true` | Set true to have  *.R files in /code & /02_code directories + subdirectories scanned for library(package) entries. Missing package will be installed as part of contrianer startup. |
-| `-v /01_input` | Placeholder folder for source data mapping. R-Shiny apps can map to this location using ../01_input |
-| `-v /02_code` | The web root for shiny. R shiny code reside here. |
-| `-v /04_output` | Placeholder folder for output data storage. R-Shiny apps can map to this location using ../04_output |
-| `-v /05_logs` | Placeholder folder for log file output. R-Shiny apps can map to this location using ../05_logs |
+| `-e PRIVILEGED=false` | Set true to run shiny-server as root user |
+| `-e DISCOVER_PACKAGES=true` | Set true to have  *.R files in /code & /02_code directories + subdirectories scanned for library(package) entries. Missing R packages will be installed as part of container startup. |
+| `-e REQUIRED_PACKAGES=packages,to,install` | Specify a csv list of R package names to look for ensure are installed irrespective of if package discovery is on and/or finds a library() refrence for them. |
+| `-v ../data:/shiny-server/data` | Placeholder folder for source data mapping. R-Shiny apps can map to this location using ../data |
+| `-v .:/shiny-server/www` | The web root for shiny. R shiny code resides here. |
+| `-v ../data:/shiny-server/output` | Placeholder folder for output data storage. R-Shiny apps can map to this location using ../output |
 
 
 ## Preinstalled Packages
@@ -74,5 +76,5 @@ Run package, start shiny-server and view logs
   setsid /usr/bin/shiny-server.sh >/dev/null 2>&1 < /dev/null &
   cat /var/log/shiny-server/code-shiny-*
 
-Check if there is sufficent disc space available for temp files
+Check if there is sufficient disc space available for temp files
   df -h /tmp

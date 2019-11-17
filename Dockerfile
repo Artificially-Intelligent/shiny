@@ -12,11 +12,11 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	unixodbc-dev \
 	libcurl4-openssl-dev \
 	libssl-dev \
+	gosu \
+	# for R package  magick
 	libmagick++-dev \
-	libudunits2-dev \
-	libgdal-dev \
 	# for R package summarytools
-	tcl8.6-dev tk8.6-dev \ 
+	libudunits2-dev libgdal-dev tcl8.6-dev tk8.6-dev \ 
 	# for R package V8
 	libv8-dev \
 	# for R package jqr
@@ -36,28 +36,47 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	&& apt-get autoremove -y \
 	&& apt-get autoclean -y \
 	&& rm -rf /var/lib/apt/lists/* \
- 	&& rm -r /srv/shiny-server \
-## create directories for mounting code / data
- 	&& mkdir -p /data \
- 	&& mkdir -p /01_input \
- 	&& mkdir -p /code \
- 	&& mkdir -p /02_code \
- 	&& ln -s /tmp /03_staging \
- 	&& mkdir -p /04_output \
- 	&& mkdir -p /var/log/shiny-server \
- 	&& ln -s /var/log/shiny-server /05_logs
+ 	&& rm -r /srv/shiny-server
 
-## copy config files
+## install R packages from REQUIRED_PACKAGES and default_install_packages.csv
+ARG REQUIRED_PACKAGES
 COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
 COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
+RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv');" \
+&& rm -rf /tmp/*
+
+
+## copy shiny config and start script
 COPY shiny-server.conf.tmpl /etc/shiny-server/shiny-server.conf.tmpl
 COPY shiny-server.sh /usr/bin/shiny-server.sh
+COPY entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/shiny-server.sh 
+RUN chmod +x /usr/bin/entrypoint.sh 
 
-## install R-packages
-RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '/02_code', discovery = FALSE);" \
-&& rm -rf /tmp/*
-	
+## create directories for mounting shiny app code / data
+ARG PARENT_DIR=/shiny-server
+ARG DATA_DIR=${PARENT_DIR}/data
+ARG CODE_DIR=${PARENT_DIR}/www
+ARG TEMP_DIR=${PARENT_DIR}/staging
+ARG OUTPUT_DIR=${PARENT_DIR}/output
+ARG LOG_DIR=/var/log/shiny-server
+
+RUN mkdir -p $PARENT_DIR \
+	&& mkdir -p $DATA_DIR \
+ 	&& mkdir -p $CODE_DIR \
+ 	&& ln -s /tmp $TEMP_DIR \
+ 	&& mkdir -p $OUTPUT_DIR \
+ 	&& mkdir -p $LOG_DIR \
+	&& chown $PUID.$PGID -R $PARENT_DIR 
 	
 ## start shiny server
-RUN chmod +x /usr/bin/shiny-server.sh 
+ENV REQUIRED_PACKAGES ${REQUIRED_PACKAGES}
+
+ENV DATA_DIR ${DATA_DIR}
+ENV CODE_DIR ${CODE_DIR}
+ENV TEMP_DIR ${TEMP_DIR}
+ENV OUTPUT_DIR ${OUTPUT_DIR}
+ENV LOG_DIR ${LOG_DIR} 
+
+#ENTRYPOINT ["/usr/bin/entrypoint.sh"]
 CMD ["/usr/bin/shiny-server.sh"]

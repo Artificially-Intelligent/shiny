@@ -1,22 +1,30 @@
-list.of.packages <- c("readr")
+list.of.packages <- c("readr","stringr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, quiet = TRUE)
 library(readr);
+library(stringr);
 
 
+? str_split
 discover_and_install <- function(default_packages_csv, discovery_directory_root = '/02_code', discovery = FALSE){
   
-  default_packages <- unique(read_csv(default_packages_csv)[["packages"]])
+  if(file.exists(default_packages_csv)){
+    default_packages <- unique(read_csv(default_packages_csv)[["packages"]])
+  }else{
+    default_packages <- c()
+  }
+  
+  if(nchar(Sys.getenv('REQUIRED_PACKAGES')) > 0){
+    required_packages <- unique(str_split(Sys.getenv('REQUIRED_PACKAGES'),",")[[1]])
+    print(paste("Adding csv entries from ENV variable REQUIRED_PACKAGES to list of packages to install: (", 
+                paste(required_packages, collapse = ",") , ")",sep = ""))
+  }else{
+    required_packages <- c()
+  }
   
   default_packages_csv_path <- strsplit(default_packages_csv, "/")
   default_packages_csv_filename <- default_packages_csv_path[[1]][length(default_packages_csv_path[[1]])]
-  
   installed_packages_csv <- sub(default_packages_csv_filename,'installed_packages.csv',default_packages_csv)
-  if(file.exists(installed_packages_csv)){
-    previously_installed_packages <- unique(read_csv(installed_packages_csv)[["packages"]])
-  }else{
-    previously_installed_packages <- c()
-  }
   
   discovered_packages <- c()
   if(discovery){
@@ -45,7 +53,7 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
     print(paste("Packages discovered in *.R files: (", paste(discovered_packages, collapse = ",") , ")",sep = ""))
   }
 
-  packages_to_install <- unique(c(default_packages, discovered_packages))
+  packages_to_install <- unique(c(default_packages, required_packages, discovered_packages))
   packages_to_install <- packages_to_install[!(packages_to_install %in% installed.packages()[,"Package"])]
 
   if(length(packages_to_install)>0){
