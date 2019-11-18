@@ -2,7 +2,7 @@ steps:
   # build the container image
  - name: 'gcr.io/kaniko-project/executor:latest'
    args:
-   - --destination=gcr.io/$PROJECT_ID/$_SERVICE_NAME
+   - --destination=asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME
    - --cache=true
 #   - --cache-ttl=672‬
   # Deploy container image to Cloud Run
