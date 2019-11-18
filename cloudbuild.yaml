@@ -1,10 +1,4 @@
 steps:
- - name: 'gcr.io/cloud-builders/docker'
-   entrypoint: 'bash'
-   args:
-   - '-c'
-   - |
-     docker pull asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest || exit 0
   # build the container image
  - name: 'gcr.io/kaniko-project/executor:latest'
    args:
@@ -12,7 +6,7 @@ steps:
    - --cache=true
 #   - --cache-ttl=672‬
   # push the container image to Container Registry
- - name: 'gcr.io/cloud-builders/docker'
+ - name: 'gcr.io/kaniko-project/executor:latest'
    args:
     - 'push'
     - 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME'
