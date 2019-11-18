@@ -1,8 +1,7 @@
 # Base image https://hub.docker.com/u/rocker/
 FROM rocker/r-ver:devel
 
-RUN apt-get update -qq && apt-get -y --no-install-recommends install \
-#RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y \
     sudo \
     gdebi-core \
     pandoc \
@@ -17,7 +16,8 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	gettext-base \
 	# for git clone
 	git \
-	# for R packages 
+	# for R packages dependencies
+	&& apt-get update -qq && apt-get -y --no-install-recommends install \
 	libxml2-dev \
 	libsqlite3-dev \
 	libmariadbd-dev \
