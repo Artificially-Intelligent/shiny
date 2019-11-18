@@ -49,12 +49,19 @@ RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); disco
 RUN R -e "remotes::install_github(c('rstudio/httpuv'))" \
 	&& rm -rf /tmp/*
 
+# add image labels
+ARG DOCKER_REPO=artificiallyintelligent/shiny
+ARG BUILD_DATE
+ARG VERSION=0.x.x
+ARG MAINTAINER=slink42
+
+LABEL build_version="$DOCKER_REPO version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+LABEL maintainer="$MAINTAINER"
+
 ## copy shiny config and start script
 COPY shiny-server.conf.tmpl /etc/shiny-server/shiny-server.conf.tmpl
 COPY shiny-server.sh /usr/bin/shiny-server.sh
-COPY entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/shiny-server.sh 
-RUN chmod +x /usr/bin/entrypoint.sh 
 
 ## create directories for mounting shiny app code / data
 ARG PARENT_DIR=/svr/shiny
