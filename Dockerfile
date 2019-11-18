@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y \
     libcairo2-dev \
     libxt-dev \
     wget \
+	# for reading log to stdio
+	xtail \
 	# for changing from root user 
 	gosu \
 	# for envsubst
