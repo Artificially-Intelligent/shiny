@@ -10,7 +10,7 @@ steps:
    args:
    - --destination=gcr.io/$PROJECT_ID/image
    - --cache=true
-   - --cache-ttl=672‬h
+   - --cache-ttl=672‬
   # push the container image to Container Registry
  - name: 'gcr.io/cloud-builders/docker'
    args:
