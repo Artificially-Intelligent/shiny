@@ -2,14 +2,9 @@ steps:
   # build the container image
  - name: 'gcr.io/kaniko-project/executor:latest'
    args:
-   - --destination=gcr.io/$PROJECT_ID/image
+   - --destination=gcr.io/$PROJECT_ID/$_SERVICE_NAME
    - --cache=true
 #   - --cache-ttl=672‬
-  # push the container image to Container Registry
- - name: 'gcr.io/kaniko-project/executor:latest'
-   args:
-    - 'push'
-    - 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME'
   # Deploy container image to Cloud Run
  - name: 'gcr.io/cloud-builders/gcloud'
    args: 
