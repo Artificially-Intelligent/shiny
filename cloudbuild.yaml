@@ -1,12 +1,12 @@
 steps:
   # build the container image
-- name: 'asia.gcr.io/cloud-builders/docker'
+- name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME', '.']
   # push the container image to Container Registry
-- name: 'asia.gcr.io/cloud-builders/docker'
+- name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME']
   # Deploy container image to Cloud Run
-- name: 'asia.gcr.io/cloud-builders/gcloud'
+- name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'deploy', '$_SERVICE_NAME', '--image', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME', '--region', 'asia','--platform', 'managed', '--quiet']
 images:
 - asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME
