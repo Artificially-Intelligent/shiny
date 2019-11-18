@@ -23,21 +23,21 @@ export SHINY_GROUP=shiny
 
 if [ -z "${DATA_DIR}" ]; then
     echo "DATA_DIR not specified, shiny server run as default value: /01_data"
-    export DATA_DIR=/svr/shiny/data
+    export DATA_DIR=/srv/shiny-server/data
 fi
 mkdir -p $DATA_DIR
 chown $SHINY_USER.$SHINY_GROUP -R $DATA_DIR
 
 if [ -z "${WWW_DIR}" ]; then
     echo "WWW_DIR not specified, shiny server run as default value: /02_code"
-    export WWW_DIR=/svr/shiny/www
+    export WWW_DIR=/srv/shiny-server/www
 fi
 mkdir -p $WWW_DIR
 chown $SHINY_USER.$SHINY_GROUP -R $WWW_DIR
 
 if [ -z "${OUTPUT_DIR}" ]; then
     echo "OUTPUT_DIR not specified, shiny server run as default value: /04_output"
-    export OUTPUT_DIR=/svr/shiny/output
+    export OUTPUT_DIR=/srv/shiny-server/output
 fi
 mkdir -p $OUTPUT_DIR
 chown $SHINY_USER.$SHINY_GROUP -R $OUTPUT_DIR

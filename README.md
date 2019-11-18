@@ -55,12 +55,12 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e PRIVILEGED=false` | Set true to run shiny-server as root user  |
 | `-e DISCOVER_PACKAGES=true` | Set true to have  *.R files in /code & /02_code directories + subdirectories scanned for library(package) entries. Missing R packages will be installed as part of container startup. |
 | `-e REQUIRED_PACKAGES=packages,to,install` | Specify a csv list of R package names to look for ensure are installed irrespective of if package discovery is on and/or finds a library() refrence for them. |
-| `-v ../data:/svr/shiny/data` | Placeholder folder for source data mapping. R-Shiny apps can map to this location using ../data |
-| `-e DATA_DIR=/svr/shiny/data` | Specify a custom location for data directory inside container. | 
-| `-v .:/svr/shiny/www` | The web root for shiny. R shiny code resides here. |
-| `-e WWW_DIR=/svr/shiny/www` | Specify a custom location for shiny www root directory inside container. | 
-| `-v ../data:/svr/shiny/output` | Placeholder folder for output data storage. R-Shiny apps can map to this location using ../output |
-| `-e OUTPUT_DIR=/svr/shiny/output` | Specify a custom location for data output directory inside container. | 
+| `-v ../data:/srv/shiny-server/data` | Placeholder folder for source data mapping. R-Shiny apps can map to this location using ../data |
+| `-e DATA_DIR=/srv/shiny-server/data` | Specify a custom location for data directory inside container. | 
+| `-v .:/srv/shiny-server/www` | The web root for shiny. R shiny code resides here. |
+| `-e WWW_DIR=/srv/shiny-server/www` | Specify a custom location for shiny www root directory inside container. | 
+| `-v ../data:/srv/shiny-server/output` | Placeholder folder for output data storage. R-Shiny apps can map to this location using ../output |
+| `-e OUTPUT_DIR=/srv/shiny-server/output` | Specify a custom location for data output directory inside container. | 
 
 
 ## Preinstalled Packages
@@ -76,8 +76,8 @@ Look at instructions here for the general process of how to:
 
 Run package, start shiny-server and view logs
   docker run -it -p 3838:3838 -e PORT=3838 --name shiny artificiallyintelligent/shiny:latest /bin/bash
-  setsid /usr/bin/svr/shiny.sh >/dev/null 2>&1 < /dev/null &
-  cat /var/log/svr/shiny/code-shiny-*
+  setsid /usr/bin/srv/shiny-server.sh >/dev/null 2>&1 < /dev/null &
+  cat /var/log/srv/shiny-server/code-shiny-*
 
 Check if there is sufficient disc space available for temp files
   df -h /tmp

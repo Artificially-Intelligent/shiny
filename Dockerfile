@@ -1,10 +1,23 @@
 # Base image https://hub.docker.com/u/rocker/
-FROM rocker/shiny
+FROM rocker/r-ver:devel
 
-## install debian packages
-RUN apt-get update -qq && apt-get -y --no-install-recommends install \
+RUN apt-get update && apt-get install -y --no-install-recommends install  \
+    sudo \
+    gdebi-core \
+    pandoc \
+    pandoc-citeproc \
+    libcurl4-gnutls-dev \
+    libcairo2-dev \
+    libxt-dev \
+    wget \
+	# for changing from root user 
+	gosu \
+	# for envsubst
+	gettext-base \
+	# for git clone
+	git \
+	# for R packages 
 	libxml2-dev \
-	libcairo2-dev \
 	libsqlite3-dev \
 	libmariadbd-dev \
 	libpq-dev \
@@ -12,7 +25,6 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	unixodbc-dev \
 	libcurl4-openssl-dev \
 	libssl-dev \
-	gosu \
 	# for R package  magick
 	libmagick++-dev \
 	# for R package summarytools
@@ -21,32 +33,31 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libv8-dev \
 	# for R package jqr
 	libjq-dev \
-	# for R package jqr
-	libprotobuf-dev \
 	# for R package protolite
 	libprotobuf-dev protobuf-compiler \
-	# for envsubst
-	gettext-base \
-	# for git clone
-	git \
  	&& cd / \
 	&& apt-get clean all \
 	&& rm -rf /tmp/* \
 	&& apt-get remove --purge -y $BUILDDEPS \
 	&& apt-get autoremove -y \
 	&& apt-get autoclean -y \
-	&& rm -rf /var/lib/apt/lists/* \
- 	&& rm -r /srv/shiny-server
+	&& rm -rf /var/lib/apt/lists/*
 
-## install R packages from REQUIRED_PACKAGES and default_install_packages.csv
+# Download and install shiny server
+# Download and install R packages from REQUIRED_PACKAGES and default_install_packages.csv
 ARG REQUIRED_PACKAGES
 COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
 COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
-RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv');" \
-	&& rm -rf /tmp/*
 
-## install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
-RUN R -e "remotes::install_github(c('rstudio/httpuv'))" \
+RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION -O "version.txt" && \
+    VERSION=$(cat version.txt)  && \
+    wget --no-verbose "https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-$VERSION-amd64.deb" -O ss-latest.deb && \
+    gdebi -n ss-latest.deb && \
+    rm -f version.txt ss-latest.deb && \
+    . /etc/environment && \
+	Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv',repos='$MRAN');" \
+# install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
+	R -e "remotes::install_github(c('rstudio/httpuv'))" \
 	&& rm -rf /tmp/*
 
 # add image labels
@@ -69,7 +80,7 @@ RUN chmod +x /usr/bin/shiny-server.sh
 #RUN chmod +x /usr/bin/entrypoint.sh 
 
 ## create directories for mounting shiny app code / data
-ARG PARENT_DIR=/svr/shiny
+ARG PARENT_DIR=/srv/shiny-server
 ARG DATA_DIR=${PARENT_DIR}/data
 ARG WWW_DIR=${PARENT_DIR}/www
 ARG TEMP_DIR=${PARENT_DIR}/staging

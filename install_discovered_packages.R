@@ -6,7 +6,7 @@ library(stringr);
 
 
 ? str_split
-discover_and_install <- function(default_packages_csv, discovery_directory_root = '/02_code', discovery = FALSE){
+discover_and_install <- function(default_packages_csv, discovery_directory_root = '/02_code', discovery = FALSE, repos = 'https://cran.rstudio.com/'){
   
   if(file.exists(default_packages_csv)){
     default_packages <- unique(read_csv(default_packages_csv)[["packages"]])
@@ -65,7 +65,7 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
             print(paste("Installing package: ", package_name ,sep = ""))
             install.packages(package_name, 
                              dependencies = TRUE,
-                             repos = 'https://cran.rstudio.com/', 
+                             repos = repos, 
                              method='wget',
                              quiet = TRUE)
             write.table(package_name, file=installed_packages_csv, row.names=FALSE, col.names=FALSE, sep=",", append = TRUE)
