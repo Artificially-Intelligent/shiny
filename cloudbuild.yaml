@@ -1,12 +1,12 @@
 steps:
   # build the container image
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/$PROJECT_ID/shiny', '.']
+- name: 'asia.gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'asia.gcr.io/$PROJECT_ID/shiny', '--build-arg', 'BUILD_DATE=$(date)', '--build-arg', 'DOCKER_REPO=asia.gcr.io/cloud-builders/docker', '--build-arg', 'VERSION=$TAG_NAME',  '--build-arg', 'SOURCE_BRANCH=$REPO_NAME/$BRANCH_NAME',  '--build-arg', 'SOURCE_COMMIT=$COMMIT_SHA', '.']
   # push the container image to Container Registry
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/$PROJECT_ID/shiny']
+- name: 'asia.gcr.io/cloud-builders/docker'
+  args: ['push', 'asia.gcr.io/$PROJECT_ID/shiny']
   # Deploy container image to Cloud Run
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['run', 'deploy', 'shiny', '--image', 'gcr.io/$PROJECT_ID/shiny', '--region', 'asia','--platform', 'managed, '--quiet']
+- name: 'asia.gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', 'shiny', '--image', 'asia.gcr.io/$PROJECT_ID/shiny', '--region', 'asia','--platform', 'managed, '--quiet']
 images:
-- gcr.io/$PROJECT_ID/shiny
+- asia.gcr.io/$PROJECT_ID/shiny
