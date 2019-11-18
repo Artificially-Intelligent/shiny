@@ -10,3 +10,4 @@ steps:
   args: ['run', 'deploy', '$_SERVICE_NAME', '--image', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME', '--region', 'asia','--platform', 'managed', '--quiet']
 images:
 - asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME
+timeout: 14400s
