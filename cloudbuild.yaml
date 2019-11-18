@@ -4,7 +4,7 @@ steps:
    args:
    - '-c'
    - |
-     docker pull gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest || exit 0
+     docker pull gcr.io/$PROJECT_ID/shiny:latest || exit 0
   # build the container image
  - name: 'gcr.io/cloud-builders/docker'
    args: ['build', '-t', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME', '--cache-from', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest', '.']
