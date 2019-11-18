@@ -48,7 +48,7 @@ RUN apt-get update && apt-get install -y \
 
 # Download and install shiny server
 # Download and install R packages from REQUIRED_PACKAGES and default_install_packages.csv
-ARG REQUIRED_PACKAGES
+ARG REQUIRED_PACKAGES=shiny,rmarkdown
 COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
 COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
 
