@@ -1,7 +1,7 @@
 # [Artificially-Intelligent/shiny](https://github.com/Artificially-Intelligent/shiny)
 
 ## Description
-rocker/rbase docker image with a selection of packages preinstalled geared to support R-Shiny based webapps. Also come with option to install additional packages at container startup for packages refrenced by a library('package') statment within any *.R file copied/mounted into container, or specified by environment variable REQUIRED_PACKAGES.  
+rocker/r-ver docker image with a selection of packages preinstalled geared to support R-Shiny based webapps. Also come with option to install additional packages at container startup for packages refrenced by a library('package') statment within any *.R file copied/mounted into container, or specified by environment variable REQUIRED_PACKAGES.  
 
 ## Usage
 

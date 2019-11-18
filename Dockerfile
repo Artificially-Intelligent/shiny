@@ -1,7 +1,8 @@
 # Base image https://hub.docker.com/u/rocker/
 FROM rocker/r-ver:devel
 
-RUN apt-get update && apt-get install -y --no-install-recommends install  \
+RUN apt-get update -qq && apt-get -y --no-install-recommends install \
+#RUN apt-get update && apt-get install -y \
     sudo \
     gdebi-core \
     pandoc \
