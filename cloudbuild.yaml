@@ -1,13 +1,19 @@
 steps:
+ - name: 'gcr.io/cloud-builders/docker'
+   entrypoint: 'bash'
+   args:
+   - '-c'
+   - |
+     docker pull gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest || exit 0
   # build the container image
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME', '.']
+ - name: 'gcr.io/cloud-builders/docker'
+   args: ['build', '-t', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME', '--cache-from', 'gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest', '.']
   # push the container image to Container Registry
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME']
+ - name: 'gcr.io/cloud-builders/docker'
+   args: ['push', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME']
   # Deploy container image to Cloud Run
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['run', 'deploy', '$_SERVICE_NAME', '--image', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME', '--region', 'asia','--platform', 'managed', '--quiet']
+ - name: 'gcr.io/cloud-builders/gcloud'
+   args: ['run', 'deploy', '$_SERVICE_NAME', '--image', 'asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME', '--region', 'asia','--platform', 'managed', '--quiet']
 images:
-- asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME
+  - asia.gcr.io/$PROJECT_ID/$_SERVICE_NAME
 timeout: 14400s
