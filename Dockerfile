@@ -1,5 +1,5 @@
 # Base image https://hub.docker.com/u/rocker/
-FROM rocker/r-ver:devel
+FROM rocker/r-ver:3.6.1
 
 RUN apt-get update && apt-get install -y \
     sudo \
@@ -9,17 +9,32 @@ RUN apt-get update && apt-get install -y \
     libcurl4-gnutls-dev \
     libcairo2-dev \
     libxt-dev \
+    xtail \
     wget \
-	# for reading log to stdio
-	xtail \
-	# for changing from root user 
-	gosu \
-	# for envsubst
+ 	gosu \
 	gettext-base \
-	# for git clone
 	git \
-	# for R packages dependencies
-	&& apt-get update -qq && apt-get -y --no-install-recommends install \
+	&& cd / \
+	&& apt-get clean all \
+	&& rm -rf /tmp/* \
+	&& apt-get remove --purge -y $BUILDDEPS \
+	&& apt-get autoremove -y \
+	&& apt-get autoclean -y \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Download and install shiny server
+RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION -O "version.txt" && \
+    VERSION=$(cat version.txt)  && \
+    wget --no-verbose "https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-$VERSION-amd64.deb" -O ss-latest.deb && \
+    gdebi -n ss-latest.deb && \
+    rm -f version.txt ss-latest.deb && \
+    . /etc/environment && \
+    R -e "install.packages(c('shiny', 'rmarkdown'), repos='$MRAN')" && \
+    chown shiny:shiny /var/lib/shiny-server && \
+	rm -rf /tmp/*
+
+# for R packages dependencies
+RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libxml2-dev \
 	libsqlite3-dev \
 	libmariadbd-dev \
@@ -46,19 +61,12 @@ RUN apt-get update && apt-get install -y \
 	&& apt-get autoclean -y \
 	&& rm -rf /var/lib/apt/lists/*
 
-# Download and install shiny server
 # Download and install R packages from REQUIRED_PACKAGES and default_install_packages.csv
 ARG REQUIRED_PACKAGES=shiny,rmarkdown
 COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
 COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
 
-RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION -O "version.txt" && \
-    VERSION=$(cat version.txt)  && \
-    wget --no-verbose "https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-$VERSION-amd64.deb" -O ss-latest.deb && \
-    gdebi -n ss-latest.deb && \
-    rm -f version.txt ss-latest.deb && \
-    . /etc/environment && \
-	Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv',repos='$MRAN');" \
+RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv',repos='$MRAN');" \
 # install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
 	R -e "remotes::install_github(c('rstudio/httpuv'))" \
 	&& rm -rf /tmp/*
