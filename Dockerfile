@@ -104,8 +104,8 @@ LABEL maintainer="$MAINTAINER"
 ## copy shiny config and start script
 COPY shiny-server.conf.tmpl /etc/shiny-server/shiny-server.conf.tmpl
 COPY shiny-server.sh /usr/bin/shiny-server.sh
-#COPY entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/shiny-server.sh 
+#COPY entrypoint.sh /usr/bin/entrypoint.sh
 #RUN chmod +x /usr/bin/entrypoint.sh 
 
 ## create directories for mounting shiny app code / data

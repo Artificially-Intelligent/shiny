@@ -108,5 +108,5 @@ if [ "$PRIVILEGED" = "true" ];
 then
     exec shiny-server 2>&1
 else
-    exec gosu $SHINY_USER shiny-server 2>&1 &
+    exec gosu $SHINY_USER shiny-server 2>&1
 fi
