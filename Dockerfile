@@ -1,5 +1,5 @@
 # Base image https://hub.docker.com/u/rocker/
-FROM rocker/r-ver:3.6.0
+FROM rocker/r-ver:latest
 
 RUN apt-get update && apt-get install -y \
     sudo \
@@ -27,7 +27,7 @@ RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION 
 	rm -rf /tmp/*
 
 # Download and install R packages from REQUIRED_PACKAGES and default_install_packages.csv
-ARG REQUIRED_PACKAGES=shiny,rmarkdown,purrr,tidyverse,rattle,devtools,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMySQL,slackr,writexl,DT,dygraphs,formattable,highcharter,plotly,rmarkdown,scales,skimr,styler,timevis,tmaptools,data.table,dplyr,forcats,glue,janitor,jsonlite,lubridate,magick,sf,summarytools,tibbletime,wkb,xts,protolite,V8,jqr,geojson,geojsonio,auth0,googleAuthR,leaflet,leaflet.extras,shiny,shinyAce,shinycssloaders,shinycssloaders,shinydashboard,shinydashboardPlus,shinyEffects,shinyjqui,shinyjs,shinyWidgets
+ARG REQUIRED_PACKAGES=purrr,tidyverse,rattle,devtools,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMySQL,slackr,writexl,DT,dygraphs,formattable,highcharter,plotly,rmarkdown,scales,skimr,styler,timevis,tmaptools,data.table,dplyr,forcats,glue,janitor,jsonlite,lubridate,magick,sf,summarytools,tibbletime,wkb,xts,protolite,V8,jqr,geojson,geojsonio,auth0,googleAuthR,leaflet,leaflet.extras,shiny,shinyAce,shinycssloaders,shinycssloaders,shinydashboard,shinydashboardPlus,shinyEffects,shinyjqui,shinyjs,shinyWidgets,formatR,remotes,selectr,caTools,BiocManager
 
 COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
 COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
@@ -52,18 +52,13 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libjq-dev \
 	## for R package protolite
 	libprotobuf-dev protobuf-compiler \
+	## for R packages from $REQUIRED_PACKAGES
 	&& install2.r --error \
     --deps TRUE \
     --skipinstalled TRUE \
-	tidyverse \
-    dplyr \
-    devtools \
-    formatR \
-    remotes \
-    selectr \
-    caTools \
-	BiocManager \
-	echo $REQUIRED_PACKAGES |  sed 's/,/ /g' \
+	shiny \
+	rmarkdown \
+	`echo $REQUIRED_PACKAGES |  sed 's/,/ /g'` \
 	## install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
   	&& R -e "remotes::install_github(c('rstudio/httpuv'))" \
   	## clean up install files

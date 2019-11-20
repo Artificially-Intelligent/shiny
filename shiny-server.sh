@@ -62,7 +62,9 @@ else
     if [ "$(ls -A $WWW_DIR)" ]; then
         echo "Shiny web root dir $WWW_DIR successfully mapped to local path"
     else
-        cp -R /usr/local/lib/R/site-library/shiny/examples/* $WWW_DIR
+        ln -s /opt/shiny-server/samples/welcome.html $WWW_DIR/index.html
+        ln -s /opt/shiny-server/samples/sample-apps $WWW_DIR/sample-apps
+        #cp -R /usr/local/lib/R/site-library/shiny/examples/* $WWW_DIR/
     fi
 fi
 
