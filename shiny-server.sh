@@ -58,16 +58,32 @@ then
     echo "Copying contentes of github repo $SHINYCODE_GITHUB_REPO to $WWW_DIR"
     git clone $SHINYCODE_GITHUB_REPO $WWW_DIR
     chown $SHINY_USER.$SHINY_GROUP -R $WWW_DIR
+else
+    if [ "$(ls -A $WWW_DIR)" ]; then
+        echo "Shiny web root dir $WWW_DIR successfully mapped to local path"
+    else
+        cp -R /usr/local/lib/R/site-library/shiny/examples/* $WWW_DIR
+    fi
 fi
+
+if [ -z "${MRAN}" ];
+then
+    [ -z "$BUILD_DATE" ] && BUILD_DATE=$(TZ="America/Los_Angeles" date -I) || true \
+  	&& MRAN=https://mran.microsoft.com/snapshot/${BUILD_DATE} \
+  	&& echo MRAN=$MRAN >> /etc/environment \
+  	&& export MRAN=$MRAN
+fi
+
+echo "Installing R packages using repository: $MRAN"
 
 if [ "$DISCOVER_PACKAGES" = "true" ];
 then
     # install packages specified by /etc/shiny-server/default_install_packages.csv or REQUIRED_PACKAGES
     # or those discovered  by a scan of files in $WWW_DIR looking for library('packagename') entries
-	Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '$WWW_DIR', discovery = TRUE);"
+	Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '$WWW_DIR', discovery = TRUE,repos='$MRAN');"
 else
     # install packages specified by /etc/shiny-server/default_install_packages.csv or REQUIRED_PACKAGES
-	Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '$WWW_DIR', discovery = FALSE);"
+	Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv', discovery_directory_root = '$WWW_DIR', discovery = FALSE,repos='$MRAN');"
 fi
 
 # if running in google cloud run disable incompatible protocols
@@ -82,21 +98,15 @@ fi
 #Substitute ENV variable values into shiny-server.conf
 envsubst < /etc/shiny-server/shiny-server.conf.tmpl >  /etc/shiny-server/shiny-server.conf
 
+if [ "$APPLICATION_LOGS_TO_STDOUT" != "false" ];
+then
+    # push the "real" application logs to stdout with xtail in detached mode
+    exec xtail /var/log/shiny-server/ &
+fi
+
 if [ "$PRIVILEGED" = "true" ];
 then
-    if [ "$APPLICATION_LOGS_TO_STDOUT" = "false" ];
-    then
-        exec shiny-server 2>&1
-    else
-        exec shiny-server 2>&1 &
-        gosu $SHINY_USER xtail /var/log/shiny-server/
-    fi
+    exec shiny-server 2>&1
 else
-    if [ "$APPLICATION_LOGS_TO_STDOUT" = "false" ];
-    then
-        exec gosu $SHINY_USER shiny-server 2>&1
-    else
-        exec gosu $SHINY_USER shiny-server 2>&1 &
-        gosu $SHINY_USER xtail /var/log/shiny-server/
-    fi
+    exec gosu $SHINY_USER shiny-server 2>&1 &
 fi

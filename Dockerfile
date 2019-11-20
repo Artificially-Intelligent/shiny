@@ -1,5 +1,5 @@
 # Base image https://hub.docker.com/u/rocker/
-FROM rocker/r-ver:3.6.1
+FROM rocker/r-ver:3.6.0
 
 RUN apt-get update && apt-get install -y \
     sudo \
@@ -13,14 +13,7 @@ RUN apt-get update && apt-get install -y \
     wget \
  	gosu \
 	gettext-base \
-	git \
-	&& cd / \
-	&& apt-get clean all \
-	&& rm -rf /tmp/* \
-	&& apt-get remove --purge -y $BUILDDEPS \
-	&& apt-get autoremove -y \
-	&& apt-get autoclean -y \
-	&& rm -rf /var/lib/apt/lists/*
+	git 
 
 # Download and install shiny server
 RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION -O "version.txt" && \
@@ -33,6 +26,12 @@ RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION 
     chown shiny:shiny /var/lib/shiny-server && \
 	rm -rf /tmp/*
 
+# Download and install R packages from REQUIRED_PACKAGES and default_install_packages.csv
+ARG REQUIRED_PACKAGES=shiny,rmarkdown,purrr,tidyverse,rattle,devtools,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMySQL,slackr,writexl,DT,dygraphs,formattable,highcharter,plotly,rmarkdown,scales,skimr,styler,timevis,tmaptools,data.table,dplyr,forcats,glue,janitor,jsonlite,lubridate,magick,sf,summarytools,tibbletime,wkb,xts,protolite,V8,jqr,geojson,geojsonio,auth0,googleAuthR,leaflet,leaflet.extras,shiny,shinyAce,shinycssloaders,shinycssloaders,shinydashboard,shinydashboardPlus,shinyEffects,shinyjqui,shinyjs,shinyWidgets
+
+COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
+COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
+
 # for R packages dependencies
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libxml2-dev \
@@ -43,33 +42,52 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	unixodbc-dev \
 	libcurl4-openssl-dev \
 	libssl-dev \
-	# for R package  magick
+	## for R package  magick
 	libmagick++-dev \
-	# for R package summarytools
+	## for R package summarytools
 	libudunits2-dev libgdal-dev tcl8.6-dev tk8.6-dev \ 
-	# for R package V8
+	## for R package V8
 	libv8-dev \
-	# for R package jqr
+	## for R package jqr
 	libjq-dev \
-	# for R package protolite
+	## for R package protolite
 	libprotobuf-dev protobuf-compiler \
- 	&& cd / \
+	&& install2.r --error \
+    --deps TRUE \
+    --skipinstalled TRUE \
+	tidyverse \
+    dplyr \
+    devtools \
+    formatR \
+    remotes \
+    selectr \
+    caTools \
+	BiocManager \
+	echo $REQUIRED_PACKAGES |  sed 's/,/ /g' \
+	## install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
+  	&& R -e "remotes::install_github(c('rstudio/httpuv'))" \
+  	## clean up install files
+	&& cd / \
 	&& apt-get clean all \
 	&& rm -rf /tmp/* \
 	&& apt-get remove --purge -y $BUILDDEPS \
 	&& apt-get autoremove -y \
 	&& apt-get autoclean -y \
-	&& rm -rf /var/lib/apt/lists/*
+	&& rm -rf /var/lib/apt/lists/* 
 
-# Download and install R packages from REQUIRED_PACKAGES and default_install_packages.csv
-ARG REQUIRED_PACKAGES=shiny,rmarkdown
-COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
-COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
-
-RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv',repos='$MRAN');" \
-# install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
-	R -e "remotes::install_github(c('rstudio/httpuv'))" \
-	&& rm -rf /tmp/*
+ 	## install packages from date-locked MRAN snapshot of CRAN
+#RUN [ -z "$BUILD_DATE" ] && BUILD_DATE=$(TZ="America/Los_Angeles" date -I) || true \
+#  	&& MRAN=https://mran.microsoft.com/snapshot/${BUILD_DATE} \
+#  	&& echo MRAN=$MRAN >> /etc/environment \
+#  	&& export MRAN=$MRAN \
+#  	&& Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv',repos='$MRAN');" \
+#	&& cd / \
+#	&& apt-get clean all \
+#	&& rm -rf /tmp/* \
+#	&& apt-get remove --purge -y $BUILDDEPS \
+#	&& apt-get autoremove -y \
+#	&& apt-get autoclean -y \
+#	&& rm -rf /var/lib/apt/lists/* 
 
 # add image labels
 ARG DOCKER_IMAGE=artificiallyintelligent/shiny
