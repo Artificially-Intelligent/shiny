@@ -26,11 +26,7 @@ RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION 
     chown shiny:shiny /var/lib/shiny-server && \
 	rm -rf /tmp/*
 
-# Download and install R packages from csv ENV variable REQUIRED_PACKAGES and REQUIRED_PACKAGES_PLUS
-# Packages plus all suggested dependencies
-ARG REQUIRED_PACKAGES_PLUS=
-# Packages plus all required dependencies
-ARG REQUIRED_PACKAGES=tidyverse,dplyr,devtools,formatR,remotes,selectr,caTools,BiocManager,purrr,rattle,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMySQL,slackr,writexl,DT,dygraphs,formattable,highcharter,plotly,rmarkdown,scales,skimr,styler,timevis,tmaptools,data.table,forcats,glue,janitor,jsonlite,lubridate,magick,sf,summarytools,tibbletime,wkb,xts,protolite,V8,jqr,geojson,geojsonio,auth0,googleAuthR,leaflet,leaflet.extras,shiny,shinyAce,shinycssloaders,shinycssloaders,shinydashboard,shinydashboardPlus,shinyEffects,shinyjqui,shinyjs,shinyWidgets
+# Download and install R package dependancies
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libxml2-dev \
 	libsqlite3-dev \
@@ -59,7 +55,8 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	&& apt-get autoclean -y \
 	&& rm -rf /var/lib/apt/lists/* 
 
-	## for R packages from $REQUIRED_PACKAGES
+# Download and install R packages and suggested dependencies from csv ENV variable REQUIRED_PACKAGES_PLUS
+ARG REQUIRED_PACKAGES_PLUS=tidyverse,dplyr,devtools,formatR,remotes,selectr,caTools,BiocManager
 RUN install2.r \
 	--error \
     --deps TRUE \
@@ -68,10 +65,20 @@ RUN install2.r \
 	shiny \
 	rmarkdown \
 	remotes \
+	`echo $REQUIRED_PACKAGES_PLUS |  sed 's/,/ /g'` \
+	&& rm -rf /tmp/*
+
+# Download and install R packages from csv ENV variable REQUIRED_PACKAGES
+ARG REQUIRED_PACKAGES=purrr,rattle,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMySQL,slackr,writexl,DT,dygraphs,formattable,highcharter,plotly,rmarkdown,scales,skimr,styler,timevis,tmaptools,data.table,forcats,glue,janitor,jsonlite,lubridate,magick,sf,summarytools,tibbletime,wkb,xts,protolite,V8,jqr,geojson,geojsonio,auth0,googleAuthR,leaflet,leaflet.extras,shiny,shinyAce,shinycssloaders,shinycssloaders,shinydashboard,shinydashboardPlus,shinyEffects,shinyjqui,shinyjs,shinyWidgets
+RUN install2.r \
+	--error \
+	--ncpus -1 \
+    --skipinstalled \
 	`echo $REQUIRED_PACKAGES |  sed 's/,/ /g'` \
-	&& rm -rf /tmp/* \
-  	## install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
-	&& R -e "remotes::install_github(c('rstudio/httpuv'))"
+	&& rm -rf /tmp/*
+
+# install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
+RUN R -e "remotes::install_github(c('rstudio/httpuv'))"
 
 #COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
 #COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
@@ -121,6 +128,7 @@ RUN mkdir -p $PARENT_DIR \
 
 ## start shiny server
 ENV REQUIRED_PACKAGES ${REQUIRED_PACKAGES}
+ENV REQUIRED_PACKAGES_PLUS ${REQUIRED_PACKAGES_PLUS}
 
 ENV DATA_DIR ${DATA_DIR}
 ENV WWW_DIR ${WWW_DIR}
