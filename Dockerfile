@@ -26,13 +26,11 @@ RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION 
     chown shiny:shiny /var/lib/shiny-server && \
 	rm -rf /tmp/*
 
-# Download and install R packages from REQUIRED_PACKAGES and default_install_packages.csv
-ARG REQUIRED_PACKAGES=purrr,tidyverse,rattle,devtools,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMySQL,slackr,writexl,DT,dygraphs,formattable,highcharter,plotly,rmarkdown,scales,skimr,styler,timevis,tmaptools,data.table,dplyr,forcats,glue,janitor,jsonlite,lubridate,magick,sf,summarytools,tibbletime,wkb,xts,protolite,V8,jqr,geojson,geojsonio,auth0,googleAuthR,leaflet,leaflet.extras,shiny,shinyAce,shinycssloaders,shinycssloaders,shinydashboard,shinydashboardPlus,shinyEffects,shinyjqui,shinyjs,shinyWidgets,formatR,remotes,selectr,caTools,BiocManager
-
-COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
-COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
-
-# for R packages dependencies
+# Download and install R packages from csv ENV variable REQUIRED_PACKAGES and REQUIRED_PACKAGES_PLUS
+# Packages plus all suggested dependencies
+ARG REQUIRED_PACKAGES_PLUS=tidyverse,dplyr,devtools,formatR,remotes,selectr,caTools,BiocManager
+# Packages plus all required dependencies
+ARG REQUIRED_PACKAGES=purrr,rattle,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMySQL,slackr,writexl,DT,dygraphs,formattable,highcharter,plotly,rmarkdown,scales,skimr,styler,timevis,tmaptools,data.table,forcats,glue,janitor,jsonlite,lubridate,magick,sf,summarytools,tibbletime,wkb,xts,protolite,V8,jqr,geojson,geojsonio,auth0,googleAuthR,leaflet,leaflet.extras,shiny,shinyAce,shinycssloaders,shinycssloaders,shinydashboard,shinydashboardPlus,shinyEffects,shinyjqui,shinyjs,shinyWidgets
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libxml2-dev \
 	libsqlite3-dev \
@@ -52,16 +50,7 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libjq-dev \
 	## for R package protolite
 	libprotobuf-dev protobuf-compiler \
-	## for R packages from $REQUIRED_PACKAGES
-	&& install2.r --error \
-    --deps TRUE \
-    --skipinstalled TRUE \
-	shiny \
-	rmarkdown \
-	`echo $REQUIRED_PACKAGES |  sed 's/,/ /g'` \
-	## install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
-  	&& R -e "remotes::install_github(c('rstudio/httpuv'))" \
-  	## clean up install files
+	## clean up install files
 	&& cd / \
 	&& apt-get clean all \
 	&& rm -rf /tmp/* \
@@ -70,19 +59,35 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	&& apt-get autoclean -y \
 	&& rm -rf /var/lib/apt/lists/* 
 
+	## for R packages from $REQUIRED_PACKAGES
+RUN install2.r \
+	--error \
+    --deps TRUE \
+    --skipinstalled \
+	--ncpus -1 \
+	shiny \
+	rmarkdown \
+	remotes \
+	`echo $REQUIRED_PACKAGES_PLUS |  sed 's/,/ /g'` \
+	&& rm -rf /tmp/*
+RUN install2.r \
+	--error \
+	--ncpus -1 \
+    --skipinstalled \
+	`echo $REQUIRED_PACKAGES |  sed 's/,/ /g'` \
+	&& rm -rf /tmp/*
+  	## install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
+RUN R -e "remotes::install_github(c('rstudio/httpuv'))"
+
+#COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
+#COPY default_install_packages.csv /etc/shiny-server/default_install_packages.csv
+
  	## install packages from date-locked MRAN snapshot of CRAN
 #RUN [ -z "$BUILD_DATE" ] && BUILD_DATE=$(TZ="America/Los_Angeles" date -I) || true \
 #  	&& MRAN=https://mran.microsoft.com/snapshot/${BUILD_DATE} \
 #  	&& echo MRAN=$MRAN >> /etc/environment \
 #  	&& export MRAN=$MRAN \
-#  	&& Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv',repos='$MRAN');" \
-#	&& cd / \
-#	&& apt-get clean all \
-#	&& rm -rf /tmp/* \
-#	&& apt-get remove --purge -y $BUILDDEPS \
-#	&& apt-get autoremove -y \
-#	&& apt-get autoclean -y \
-#	&& rm -rf /var/lib/apt/lists/* 
+#  	&& Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(default_packages_csv = '/etc/shiny-server/default_install_packages.csv',repos='$MRAN');" 
 
 # add image labels
 ARG DOCKER_IMAGE=artificiallyintelligent/shiny
@@ -97,9 +102,10 @@ LABEL build_source="${SOURCE_BRANCH} - https://github.com/Artificially-Intellige
 LABEL maintainer="$MAINTAINER"
 
 ## copy shiny config and start script
+COPY install_discovered_packages.R /etc/shiny-server/install_discovered_packages.R
 COPY shiny-server.conf.tmpl /etc/shiny-server/shiny-server.conf.tmpl
 COPY shiny-server.sh /usr/bin/shiny-server.sh
-RUN chmod +x /usr/bin/shiny-server.sh 
+RUN chmod +x /usr/bin/shiny-server.sh
 #COPY entrypoint.sh /usr/bin/entrypoint.sh
 #RUN chmod +x /usr/bin/entrypoint.sh 
 
