@@ -48,7 +48,6 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libprotobuf-dev protobuf-compiler \
 	## clean up install files
 	&& cd / \
-	&& apt-get clean all \
 	&& rm -rf /tmp/* \
 	&& apt-get remove --purge -y $BUILDDEPS \
 	&& apt-get autoremove -y \

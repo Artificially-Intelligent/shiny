@@ -23,12 +23,12 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
   }
   
   if(nchar(Sys.getenv('REQUIRED_PACKAGES_PLUS')) > 0){
-    required_packages <- c(
+    required_packages <- unique(c(
       required_packages,
-      unique(str_split(Sys.getenv('REQUIRED_PACKAGES_PLUS'),",")[[1]])
-      print(paste("Adding csv entries from ENV variable REQUIRED_PACKAGES_PLUS to list of packages to install: (", 
-      paste(required_packages, collapse = ",") , ")",sep = ""))
-    )
+      str_split(Sys.getenv('REQUIRED_PACKAGES_PLUS'),",")[[1]]
+    ))
+    print(paste("Adding csv entries from ENV variable REQUIRED_PACKAGES_PLUS to list of packages to install: (", 
+    paste(required_packages, collapse = ",") , ")",sep = ""))
   }
 
   default_packages_csv_path <- strsplit(default_packages_csv, "/")
