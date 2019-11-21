@@ -1,5 +1,4 @@
-# Base image https://hub.docker.com/u/rocker/
-FROM rocker/r-ver:latest
+FROM rocker/r-ver:3.6.1
 
 RUN apt-get update && apt-get install -y \
     sudo \
