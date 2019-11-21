@@ -64,8 +64,11 @@ Container images are configured using parameters passed at runtime (such as thos
 
 
 ## Preinstalled Packages
+### Packages plus suggested dependencies
+tidyverse,dplyr,devtools,formatR,remotes,selectr,caTools,BiocManager
 
-See [default_install_packages.csv](https://github.com/Artificially-Intelligent/shiny/blob/master/default_install_packages.csv) for full list of packages currently included by default.
+### Packages plus required dependencies
+purrr,rattle,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMySQL,slackr,writexl,DT,dygraphs,formattable,highcharter,plotly,rmarkdown,scales,skimr,styler,timevis,tmaptools,data.table,forcats,glue,janitor,jsonlite,lubridate,magick,sf,summarytools,tibbletime,wkb,xts,protolite,V8,jqr,geojson,geojsonio,auth0,googleAuthR,leaflet,leaflet.extras,shiny,shinyAce,shinycssloaders,shinycssloaders,shinydashboard,shinydashboardPlus,shinyEffects,shinyjqui,shinyjs,shinyWidgets
 
 ## Deploying to Google Cloud Run
 Look at instructions here for the general process of how to:
