@@ -21,7 +21,7 @@ RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION 
     gdebi -n ss-latest.deb && \
     rm -f version.txt ss-latest.deb && \
     . /etc/environment && \
-    R -e "install.packages(c('shiny', 'rmarkdown'), repos='$MRAN')" && \
+    R -e "install.packages(c('shiny', 'rmarkdown','littler', 'docopt'), repos='$MRAN')" && \
     chown shiny:shiny /var/lib/shiny-server && \
 	rm -rf /tmp/*
 
@@ -45,17 +45,12 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	libjq-dev \
 	## for R package protolite
 	libprotobuf-dev protobuf-compiler \
-	## clean up install files
-	&& cd / \
-	&& rm -rf /tmp/* \
-	&& apt-get remove --purge -y $BUILDDEPS \
-	&& apt-get autoremove -y \
-	&& apt-get autoclean -y \
-	&& rm -rf /var/lib/apt/lists/* 
+	## clean up temp files
+	&& rm -rf /tmp/* 
 
 # Download and install R packages and suggested dependencies from csv ENV variable REQUIRED_PACKAGES_PLUS
 ARG REQUIRED_PACKAGES_PLUS=tidyverse,dplyr,devtools,formatR,remotes,selectr,caTools,BiocManager
-RUN install2.r \
+RUN /usr/local/bin/install2.r \
 	--error \
     --deps TRUE \
     --skipinstalled \
@@ -68,7 +63,7 @@ RUN install2.r \
 
 # Download and install R packages from csv ENV variable REQUIRED_PACKAGES
 ARG REQUIRED_PACKAGES=purrr,rattle,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMySQL,slackr,writexl,DT,dygraphs,formattable,highcharter,plotly,rmarkdown,scales,skimr,styler,timevis,tmaptools,data.table,forcats,glue,janitor,jsonlite,lubridate,magick,sf,summarytools,tibbletime,wkb,xts,protolite,V8,jqr,geojson,geojsonio,auth0,googleAuthR,leaflet,leaflet.extras,shiny,shinyAce,shinycssloaders,shinycssloaders,shinydashboard,shinydashboardPlus,shinyEffects,shinyjqui,shinyjs,shinyWidgets
-RUN install2.r \
+RUN /usr/local/bin/install2.r \
 	--error \
 	--ncpus -1 \
     --skipinstalled \
