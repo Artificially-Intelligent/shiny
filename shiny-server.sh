@@ -68,6 +68,16 @@ else
     fi
 fi
 
+if [ -z "${APP_INIT_TIMEOUT}" ]; then
+    echo "APP_INIT_TIMEOUT not specified, shiny server run using default value: 60"
+    export APP_INIT_TIMEOUT=60
+fi
+
+if [ -z "${APP_IDLE_TIMEOUT}" ]; then
+    echo "APP_IDLE_TIMEOUT not specified, shiny server run using default value: 5"
+    export APP_IDLE_TIMEOUT=5
+fi
+
 if [ -z "${MRAN}" ];
 then
     [ -z "$BUILD_DATE" ] && BUILD_DATE=$(TZ="America/Los_Angeles" date -I) || true \

@@ -2,6 +2,8 @@
 run_as ${SHINY_USER};
 
 disable_protocols ${SHINY_DISABLE_PROTOCOLS};
+app_init_timeout ${APP_INIT_TIMEOUT};
+app_idle_timeout ${APP_IDLE_TIMEOUT};
 
 # Define a server that listens on port defined by ENV variable PORT, defaults to 3838
 server {
