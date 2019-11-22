@@ -5,17 +5,25 @@ echo "Working dir and contents I see are:"
 echo `pwd`
 echo `ls`
 
+docker inspect $IMAGE_NAME
+docker inspect $IMAGE_NAME | grep "R_VERSION" 
+docker inspect $IMAGE_NAME | grep "R_VERSION" | head -n1
+
+
 ## Not all bash commands are available. notably grep -o -e options fail!!
-VERSION=`docker inspect $IMAGE_NAME | grep rocker/r-ver: | head -n1 | sed 's/.*\([0-9].[0-9].[0-9]\"\)/\1/' | sed 's/"//'`
+VERSION=`docker inspect $IMAGE_NAME | grep "R_VERSION" | head -n1 | sed 's/.*\([0-9].[0-9].[0-9]\"\)/\1/' | sed 's/"//'`
 echo "Version being built is:"
 echo $VERSION
 
-echo "tagging $IMAGE_NAME as $DOCKER_REPO:$VERSION..."
-docker tag $IMAGE_NAME $DOCKER_REPO:$VERSION
+if [ -z "${VERSION}" ]; then
+    echo "Unable to extract R Version for version tagging..."
+else
+    echo "tagging $IMAGE_NAME as $DOCKER_REPO:$VERSION..."
+    docker tag $IMAGE_NAME $DOCKER_REPO:$VERSION
 
-echo "pushing $DOCKER_REPO:$VERSION to hub..."
-docker push $DOCKER_REPO:$VERSION
-
+    echo "pushing $DOCKER_REPO:$VERSION to hub..."
+    docker push $DOCKER_REPO:$VERSION
+fi
 #echo "pushing $DOCKER_REPO:$SOURCE_COMMIT to hub..."
 #docker tag $IMAGE_NAME $DOCKER_REPO:$SOURCE_COMMIT
 #docker push $DOCKER_REPO:$SOURCE_COMMIT
