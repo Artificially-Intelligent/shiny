@@ -1,0 +1,22 @@
+steps:
+  # build the container image
+ - name: 'gcr.io/kaniko-project/executor:latest'
+   args:
+   - --destination=asia.gcr.io/$PROJECT_ID/$_IMAGE_NAME
+   - --cache=true
+   - --cache-ttl=336h
+  # Deploy container image to Cloud Run
+ - name: 'gcr.io/cloud-builders/gcloud'
+   args: 
+   - 'beta'
+   - 'run'
+   - 'deploy'
+   - '$_SERVICE_NAME'
+   - '--image'
+   - 'asia.gcr.io/$PROJECT_ID/$_IMAGE_NAME'
+   - '--region'
+   - '$_SERVICE_REGION'
+   - '--platform'
+   - 'managed'
+   - '--quiet'
+timeout: 14400s

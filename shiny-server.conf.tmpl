@@ -1,5 +1,9 @@
 # Instruct Shiny Server to run applications as the user "shiny"
-run_as shiny;
+run_as ${SHINY_USER};
+
+disable_protocols ${SHINY_DISABLE_PROTOCOLS};
+app_init_timeout ${APP_INIT_TIMEOUT};
+app_idle_timeout ${APP_IDLE_TIMEOUT};
 
 # Define a server that listens on port defined by ENV variable PORT, defaults to 3838
 server {
@@ -9,10 +13,10 @@ server {
   location / {
 
     # Host the directory of Shiny Apps stored in this directory
-    site_dir /02_code;
+    site_dir ${WWW_DIR};
 
     # Log all Shiny output to files in this directory
-    log_dir /var/log/shiny-server;
+    log_dir ${LOG_DIR};
 
     # When a user visits the base URL rather than a particular application,
     # an index of the applications available in this directory will be shown.
