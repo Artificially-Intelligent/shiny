@@ -6,12 +6,9 @@ echo `pwd`
 echo `ls`
 
 docker inspect $IMAGE_NAME
-docker inspect $IMAGE_NAME | grep "R_VERSION" 
-docker inspect $IMAGE_NAME | grep "R_VERSION" | head -n1
-
 
 ## Not all bash commands are available. notably grep -o -e options fail!!
-VERSION=`docker inspect $IMAGE_NAME | grep "R_VERSION" | head -n1 | sed 's/.*\([0-9].[0-9].[0-9]\"\)/\1/' | sed 's/"//'`
+VERSION=`docker inspect $IMAGE_NAME | grep "R_VERSION" | head -n1 | sed 's/.*\([0-9].[0-9].[0-9]\"\)/\1/' | sed 's/".*//'`
 echo "Version being built is:"
 echo $VERSION
 
