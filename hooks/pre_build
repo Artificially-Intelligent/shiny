@@ -3,4 +3,4 @@
 # $IMAGE_NAME var is injected into the build so the tag is correct. 
 # $IMAGE_NAME image pulled to poplutate build cache
 
-docker pull $IMAGE_NAME && return 0
+docker pull $IMAGE_NAME 
