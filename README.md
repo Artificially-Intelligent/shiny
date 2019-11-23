@@ -79,15 +79,21 @@ purrr,rattle,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMyS
 
 ## Deploying to Google Cloud Run
 Look at instructions here for the general process of how to:
-  Deloy container image to Google Container Registry: https://cloud.google.com/run/docs/deploying
-  Deloy Container Registry image as a Google Cloud Run service: https://cloud.google.com/run/docs/deploying
++ Deloy container image to Google Container Registry: https://cloud.google.com/run/docs/deploying
++ Deloy Container Registry image as a Google Cloud Run service: https://cloud.google.com/run/docs/deploying
 
 ## Troubleshooting
 
 Run package, start shiny-server and view logs
+  ```
   docker run -it -p 3838:3838 -e PORT=3838 --name shiny artificiallyintelligent/shiny:latest /bin/bash
+  ```
+  ```
   setsid /usr/bin/srv/shiny-server.sh >/dev/null 2>&1 < /dev/null &
   cat /var/log/srv/shiny-server/code-shiny-*
+  ```
 
 Check if there is sufficient disc space available for temp files
+  ```
   df -h /tmp
+  ```
