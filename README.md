@@ -36,14 +36,16 @@ services:
     container_name: myshinyapp
     environment:
       - DISCOVER_PACKAGES=true
-      - PORT=4848
+      - APP_IDLE_TIMEOUT=5
+      - APP_INIT_TIMEOUT=60
+      - PORT=8080
       - SHINYCODE_GITHUB_REPO=https://github.com/rstudio/shiny-examples
     volumes:
-      - path/to/data_source:/01_input
-      - path/to/code:/02_code
-      - path/to/data_output:/04_output
+      - path/to/data_source:/srv/shiny-server/data
+      - path/to/code:/srv/shiny-server/www
+      - path/to/data_output:/srv/shiny-server/output
     ports:
-      - 4848:4848
+      - 3838:8080
     restart: unless-stopped
 ```
 
