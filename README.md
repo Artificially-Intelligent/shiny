@@ -25,23 +25,25 @@ docker create \
 
 Compatible with docker-compose v2 schemas.
 
+```
 ---
-  version: "2"
-  services:
-    shiny:
-      image: artificiallyintelligent/shiny
-      container_name: myshinyapp
-      environment:
-        - DISCOVER_PACKAGES=true
-        - PORT=4848
-        - SHINYCODE_GITHUB_REPO=https://github.com/rstudio/shiny-examples
-      volumes:
-        - path/to/data_source:/01_input
-        - path/to/code:/02_code
-        - path/to/data_output:/04_output
-      ports:
-        - 4848:4848
-      restart: unless-stopped
+version: "2"
+services:
+  shiny:
+    image: artificiallyintelligent/shiny
+    container_name: myshinyapp
+    environment:
+      - DISCOVER_PACKAGES=true
+      - PORT=4848
+      - SHINYCODE_GITHUB_REPO=https://github.com/rstudio/shiny-examples
+    volumes:
+      - path/to/data_source:/01_input
+      - path/to/code:/02_code
+      - path/to/data_output:/04_output
+    ports:
+      - 4848:4848
+    restart: unless-stopped
+```
 
 ## Parameters
 
@@ -61,7 +63,8 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e WWW_DIR=/srv/shiny-server/www` | Specify a custom location for shiny www root directory inside container. | 
 | `-v ../data:/srv/shiny-server/output` | Placeholder folder for output data storage. R-Shiny apps can map to this location using ../output |
 | `-e OUTPUT_DIR=/srv/shiny-server/output` | Specify a custom location for data output directory inside container. | 
-
+| `-e APP_IDLE_TIMEOUT=5` | Specify a app_idle_timeout to use when starting shiny server. Default value is 5, boosting to 1800 helps prevent session disconnects |
+| `-e APP_INIT_TIMEOUT=60` | Specify a app_init_timeout to use when starting shiny server. Default value is 60, boosting to 1800 helps prevent session disconnects | 
 
 ## Preinstalled Packages
 ### Packages plus suggested dependencies
