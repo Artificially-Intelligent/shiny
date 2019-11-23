@@ -9,6 +9,7 @@ Here are some example snippets to help you get started creating a container.
 
 ## docker
 
+```
 docker create \
   --name=myshinyapp \
   -p 8080:8080 \
@@ -20,6 +21,7 @@ docker create \
   -v path/to/data_output:/04_output \
   --restart unless-stopped \
   artificiallyintelligent/shiny
+```
 
 ## docker-compose
 
