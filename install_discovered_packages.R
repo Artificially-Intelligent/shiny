@@ -88,4 +88,3 @@ discover_and_install <- function(default_packages_csv = '/no/file/selected', dis
   }
 }
 
-discover_and_install(discovery_directory_root = 'C:/Users/Stuart/Documents/Development/GitHub/shiny-examples', discovery = TRUE)
