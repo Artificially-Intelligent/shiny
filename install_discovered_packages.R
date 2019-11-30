@@ -5,8 +5,7 @@ library(readr);
 library(stringr);
 
 
-? str_split
-discover_and_install <- function(default_packages_csv, discovery_directory_root = '/02_code', discovery = FALSE, repos = 'https://cran.rstudio.com/'){
+discover_and_install <- function(default_packages_csv = '/no/file/selected', discovery_directory_root = '/02_code', discovery = FALSE, repos = 'https://cran.rstudio.com/'){
   
   if(file.exists(default_packages_csv)){
     default_packages <- unique(read_csv(default_packages_csv)[["packages"]])
@@ -31,9 +30,9 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
     paste(required_packages, collapse = ",") , ")",sep = ""))
   }
 
-  default_packages_csv_path <- strsplit(default_packages_csv, "/")
-  default_packages_csv_filename <- default_packages_csv_path[[1]][length(default_packages_csv_path[[1]])]
-  installed_packages_csv <- sub(default_packages_csv_filename,'installed_packages.csv',default_packages_csv)
+ # default_packages_csv_path <- strsplit(default_packages_csv, "/")
+#  default_packages_csv_filename <- default_packages_csv_path[[1]][length(default_packages_csv_path[[1]])]
+ # installed_packages_csv <- sub(default_packages_csv_filename,'installed_packages.csv',default_packages_csv)
   
   discovered_packages <- c()
   if(discovery){
@@ -75,9 +74,9 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
             install.packages(package_name, 
                              dependencies = TRUE,
                              repos = repos, 
-                             method='wget',
+                        #     method='wget',
                              quiet = TRUE)
-            write.table(package_name, file=installed_packages_csv, row.names=FALSE, col.names=FALSE, sep=",", append = TRUE)
+            #write.table(package_name, file=installed_packages_csv, row.names=FALSE, col.names=FALSE, sep=",", append = TRUE)
           }else{
             print(paste("Skipping previously installed package: ", package_name ,sep = ""))
           }
@@ -88,3 +87,5 @@ discover_and_install <- function(default_packages_csv, discovery_directory_root 
     print("There are no packages to be installed")
   }
 }
+
+discover_and_install(discovery_directory_root = 'C:/Users/Stuart/Documents/Development/GitHub/shiny-examples', discovery = TRUE)

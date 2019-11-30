@@ -9,6 +9,7 @@ Here are some example snippets to help you get started creating a container.
 
 ## docker
 
+```
 docker create \
   --name=myshinyapp \
   -p 8080:8080 \
@@ -20,28 +21,33 @@ docker create \
   -v path/to/data_output:/04_output \
   --restart unless-stopped \
   artificiallyintelligent/shiny
+```
 
 ## docker-compose
 
 Compatible with docker-compose v2 schemas.
 
+```
 ---
-  version: "2"
-  services:
-    shiny:
-      image: artificiallyintelligent/shiny
-      container_name: myshinyapp
-      environment:
-        - DISCOVER_PACKAGES=true
-        - PORT=4848
-        - SHINYCODE_GITHUB_REPO=https://github.com/rstudio/shiny-examples
-      volumes:
-        - path/to/data_source:/01_input
-        - path/to/code:/02_code
-        - path/to/data_output:/04_output
-      ports:
-        - 4848:4848
-      restart: unless-stopped
+version: "2"
+services:
+  shiny:
+    image: artificiallyintelligent/shiny
+    container_name: myshinyapp
+    environment:
+      - DISCOVER_PACKAGES=true
+      - APP_IDLE_TIMEOUT=5
+      - APP_INIT_TIMEOUT=60
+      - PORT=8080
+      - SHINYCODE_GITHUB_REPO=https://github.com/rstudio/shiny-examples
+    volumes:
+      - path/to/data_source:/srv/shiny-server/data
+      - path/to/code:/srv/shiny-server/www
+      - path/to/data_output:/srv/shiny-server/output
+    ports:
+      - 3838:8080
+    restart: unless-stopped
+```
 
 ## Parameters
 
@@ -61,7 +67,8 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e WWW_DIR=/srv/shiny-server/www` | Specify a custom location for shiny www root directory inside container. | 
 | `-v ../data:/srv/shiny-server/output` | Placeholder folder for output data storage. R-Shiny apps can map to this location using ../output |
 | `-e OUTPUT_DIR=/srv/shiny-server/output` | Specify a custom location for data output directory inside container. | 
-
+| `-e APP_IDLE_TIMEOUT=5` | Specify a app_idle_timeout to use when starting shiny server. Default value is 5, boosting to 1800 helps prevent session disconnects |
+| `-e APP_INIT_TIMEOUT=60` | Specify a app_init_timeout to use when starting shiny server. Default value is 60, boosting to 1800 helps prevent session disconnects | 
 
 ## Preinstalled Packages
 ### Packages plus suggested dependencies
@@ -72,15 +79,21 @@ purrr,rattle,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMyS
 
 ## Deploying to Google Cloud Run
 Look at instructions here for the general process of how to:
-  Deloy container image to Google Container Registry: https://cloud.google.com/run/docs/deploying
-  Deloy Container Registry image as a Google Cloud Run service: https://cloud.google.com/run/docs/deploying
++ Deloy container image to Google Container Registry: https://cloud.google.com/run/docs/deploying
++ Deloy Container Registry image as a Google Cloud Run service: https://cloud.google.com/run/docs/deploying
 
 ## Troubleshooting
 
 Run package, start shiny-server and view logs
+  ```
   docker run -it -p 3838:3838 -e PORT=3838 --name shiny artificiallyintelligent/shiny:latest /bin/bash
+  ```
+  ```
   setsid /usr/bin/srv/shiny-server.sh >/dev/null 2>&1 < /dev/null &
   cat /var/log/srv/shiny-server/code-shiny-*
+  ```
 
 Check if there is sufficient disc space available for temp files
+  ```
   df -h /tmp
+  ```
