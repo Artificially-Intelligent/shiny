@@ -12,8 +12,9 @@ VERSION=`docker inspect $IMAGE_NAME | grep "R_VERSION" | head -n1 | sed 's/.*\([
 echo "Version being built is:"
 echo $VERSION
 
-if [ -z "${VERSION}" ]; then
-    echo "Unable to extract R Version for version tagging..."
+#if [ -z "${VERSION}" ]; then
+if [ -z "${VERSION}" ] || [ "${DOCKER_TAG}" != "latest" ]; then 
+    echo "Tag not latest or was unable to extract R Version for version tagging..."
 else
     echo "tagging $IMAGE_NAME as $DOCKER_REPO:$VERSION..."
     docker tag $IMAGE_NAME $DOCKER_REPO:$VERSION
