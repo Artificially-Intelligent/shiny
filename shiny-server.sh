@@ -22,14 +22,14 @@ export SHINY_GROUP=shiny
 #groupadd -r --gid $PGID shinyserver && useradd --no-log-init -r -g $PGID -u $PUID shinyserver
 
 if [ -z "${DATA_DIR}" ]; then
-    echo "DATA_DIR not specified, shiny server run as default value: /01_data"
+    echo "DATA_DIR not specified, shiny server run as default value: /srv/shiny-server/data"
     export DATA_DIR=/srv/shiny-server/data
 fi
 mkdir -p $DATA_DIR
 chown $SHINY_USER.$SHINY_GROUP -R $DATA_DIR
 
 if [ -z "${WWW_DIR}" ]; then
-    echo "WWW_DIR not specified, shiny server run as default value: /02_code"
+    echo "WWW_DIR not specified, shiny server run as default value: /srv/shiny-server/www"
     export WWW_DIR=/srv/shiny-server/www
 fi
 mkdir -p $WWW_DIR
