@@ -55,7 +55,7 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	&& rm -rf /var/lib/apt/lists/* 
 
 # Download and install R packages and suggested dependencies from csv ENV variable REQUIRED_PACKAGES_PLUS
-ARG REQUIRED_PACKAGES_PLUS=tidyverse,dplyr,devtools,formatR,remotes,selectr,caTools,BiocManager
+ARG REQUIRED_PACKAGES_PLUS=
 RUN install2.r \
 	--error \
     --deps TRUE \
@@ -68,7 +68,7 @@ RUN install2.r \
 	&& rm -rf /tmp/*
 
 # Download and install R packages from csv ENV variable REQUIRED_PACKAGES
-ARG REQUIRED_PACKAGES=purrr,rattle,dotenv,magrittr,DataExplorer,aws.s3,DBI,httr,pool,readr,readxl,RMySQL,slackr,writexl,DT,dygraphs,formattable,highcharter,plotly,rmarkdown,scales,skimr,styler,timevis,tmaptools,data.table,forcats,glue,janitor,jsonlite,lubridate,magick,sf,summarytools,tibbletime,wkb,xts,protolite,V8,jqr,geojson,geojsonio,auth0,googleAuthR,leaflet,leaflet.extras,shiny,shinyAce,shinycssloaders,shinycssloaders,shinydashboard,shinydashboardPlus,shinyEffects,shinyjqui,shinyjs,shinyWidgets,ggplot2,tm,ggvis,maps,networkD3,promises,datasets,Cairo,png,digest
+ARG REQUIRED_PACKAGES=
 
 
 RUN install2.r \

@@ -48,7 +48,8 @@ discover_and_install <- function(default_packages_csv = '/no/file/selected', dis
       
       lines <- read_lines(file, skip_empty_rows = TRUE)
       if(length(lines)>0){
-        libraries <- gsub(' ','',lines[[1]][grepl('^library\\(',gsub(' ','',lines[[1]]))])
+        libraries <- gsub(' ','',lines[grepl('^library\\(',gsub(' ','',lines))])
+        libraries <- gsub("\\).*","",libraries)
         libraries <- unlist(strsplit(libraries, split="[()]"))
         libraries <- unique(libraries[!grepl('library|;',libraries)])
       }
