@@ -2,7 +2,13 @@
 
 # $IMAGE_NAME var is injected into the build so the tag is correct. 
 
-PACKAGE_LIST=`echo $DOCKER_REPO | sed -n 's/^.*shiny/shiny/p'`
+echo "Source Branch: $SOURCE_BRANCH"
+
+echo "Docker Repo: $DOCKER_REPO"
+
+if [ -z "${PACKAGE_LIST}" ]; then
+  PACKAGE_LIST=`echo $DOCKER_REPO | sed -n 's/^.*shiny/shiny/p'`
+fi
 
 if [ -f "./package_lists/$PACKAGE_LIST/REQUIRED_PACKAGES.csv" ]  && [ -f "./package_lists/$PACKAGE_LIST/REQUIRED_PACKAGES_PLUS.csv" ]; then
   printf "using $PACKAGE_LIST package lists"; 
