@@ -10,7 +10,7 @@ if [ -z "${DOCKER_REPO}" ]; then
 fi
 
 if [ -z "${PACKAGE_LIST}" ]; then
-  PACKAGE_LIST=`echo $IMAGE_NAME | sed -n 's/^.*\///p' | sed 's/:.*//'`
+  PACKAGE_LIST=`echo $DOCKER_REPO | sed -n 's/^.*\///p'`
 fi
 
 if [ -f "./package_lists/$PACKAGE_LIST/REQUIRED_PACKAGES.csv" ]  && [ -f "./package_lists/$PACKAGE_LIST/REQUIRED_PACKAGES_PLUS.csv" ]; then
