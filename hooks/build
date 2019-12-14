@@ -2,10 +2,26 @@
 
 # $IMAGE_NAME var is injected into the build so the tag is correct. 
 
+PACKAGE_LIST=`echo $DOCKER_REPO | sed -n 's/^.*shiny/shiny/p'`
+
+if [ -f "./package_lists/$PACKAGE_LIST/REQUIRED_PACKAGES.csv" ]  && [ -f "./package_lists/$PACKAGE_LIST/REQUIRED_PACKAGES_PLUS.csv" ]; then
+  printf "using $PACKAGE_LIST package lists"; 
+  REQUIRED_PACKAGES=`cat ./package_lists/$PACKAGE_LIST/REQUIRED_PACKAGES.csv`
+  REQUIRED_PACKAGES_PLUS=`cat ./package_lists/$PACKAGE_LIST/REQUIRED_PACKAGES_PLUS.csv`
+else
+  printf "using default package lists"; 
+  REQUIRED_PACKAGES=`cat ./package_lists/default/REQUIRED_PACKAGES.csv`
+  REQUIRED_PACKAGES_PLUS=`cat ./package_lists/default/REQUIRED_PACKAGES_PLUS.csv`
+fi
+
+echo $IMAGE_NAME
+
 docker build --build-arg VCS_REF=`git rev-parse --short HEAD` \
   --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
   --build-arg VERSION=0.2 \
   --build-arg DOCKER_IMAGE=$IMAGE_NAME \
   --build-arg SOURCE_BRANCH=$SOURCE_BRANCH \
   --build-arg SOURCE_COMMIT=$SOURCE_COMMIT \
+  --build-arg REQUIRED_PACKAGES=$REQUIRED_PACKAGES \
+  --build-arg REQUIRED_PACKAGES_PLUS=$REQUIRED_PACKAGES_PLUS \
   -t $IMAGE_NAME .
