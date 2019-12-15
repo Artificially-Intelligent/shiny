@@ -51,15 +51,25 @@ discover_and_install <- function(default_packages_csv = '/no/file/selected', dis
         
         # find packages referenced via library() command 
         libraries <- gsub(' ','',lines[grepl('^library\\(',gsub(' ','',lines))])
-        libraries <- gsub("\\).*","",libraries)
+        libraries <- gsub("'",'',gsub('"','',gsub("\\).*","",libraries)))
         libraries <- unlist(strsplit(libraries, split="[()]"))
         libraries <- unique(libraries[!grepl('library|;',libraries)])
         
         # find packages referenced via :: command
-        libraries <- unique(c(libraries, 
-          gsub(".* ","",gsub("\\::.*","",lines[grepl('::',lines)]))
-        ))
+        libraries <- c(libraries,
+                       gsub("\\::.*","",lines[grepl('::',lines)])
+        )
         
+        # remove anything prior to a , "' character
+        libraries <- unique(
+          gsub(".*\\(","",
+               gsub(".*,","",
+                    gsub(".* ","",
+                              libraries
+                    )
+               )
+          )
+        )
       }
       
       if(length(libraries)>0){
