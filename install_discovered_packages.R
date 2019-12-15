@@ -48,10 +48,18 @@ discover_and_install <- function(default_packages_csv = '/no/file/selected', dis
       
       lines <- read_lines(file, skip_empty_rows = TRUE)
       if(length(lines)>0){
+        
+        # find packages referenced via library() command 
         libraries <- gsub(' ','',lines[grepl('^library\\(',gsub(' ','',lines))])
         libraries <- gsub("\\).*","",libraries)
         libraries <- unlist(strsplit(libraries, split="[()]"))
         libraries <- unique(libraries[!grepl('library|;',libraries)])
+        
+        # find packages referenced via :: command
+        libraries <- unique(c(libraries, 
+          gsub(".* ","",gsub("\\::.*","",lines[grepl('::',lines)]))
+        ))
+        
       }
       
       if(length(libraries)>0){
@@ -87,5 +95,6 @@ discover_and_install <- function(default_packages_csv = '/no/file/selected', dis
   }else{
     print("There are no packages to be installed")
   }
+  print(paste("Installed packages:",paste(installed.packages()[,"Package"],collapse = ",")))
 }
 
