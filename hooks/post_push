@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+if [ -z "${DOCKER_REPO}" ]; then
+  DOCKER_REPO=`echo $IMAGE_NAME |  sed 's/:.*//'`
+fi
+
 echo "Working dir and contents I see are:"
 echo `pwd`
 echo `ls`

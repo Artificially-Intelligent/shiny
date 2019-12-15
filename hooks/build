@@ -3,11 +3,14 @@
 # $IMAGE_NAME var is injected into the build so the tag is correct. 
 
 echo "Source Branch: $SOURCE_BRANCH"
+echo "Image Name: $IMAGE_NAME"
 
-echo "Docker Repo: $DOCKER_REPO"
+if [ -z "${DOCKER_REPO}" ]; then
+  DOCKER_REPO=`echo $IMAGE_NAME |  sed 's/:.*//'`
+fi
 
 if [ -z "${PACKAGE_LIST}" ]; then
-  PACKAGE_LIST=`echo $DOCKER_REPO | sed -n 's/^.*shiny/shiny/p'`
+  PACKAGE_LIST=`echo $DOCKER_REPO | sed -n 's/^.*\///p'`
 fi
 
 if [ -f "./package_lists/$PACKAGE_LIST/REQUIRED_PACKAGES.csv" ]  && [ -f "./package_lists/$PACKAGE_LIST/REQUIRED_PACKAGES_PLUS.csv" ]; then
@@ -20,7 +23,6 @@ else
   REQUIRED_PACKAGES_PLUS=`cat ./package_lists/default/REQUIRED_PACKAGES_PLUS.csv`
 fi
 
-echo $IMAGE_NAME
 
 docker build --build-arg VCS_REF=`git rev-parse --short HEAD` \
   --build-arg BUILD_DATE=`date -u +”%Y-%m-%dT%H:%M:%SZ”` \
