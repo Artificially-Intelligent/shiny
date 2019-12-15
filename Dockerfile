@@ -13,7 +13,14 @@ RUN apt-get update && apt-get install -y \
     wget \
  	gosu \
 	gettext-base \
-	git 
+	git  \
+	## clean up install files
+	&& cd / \
+	&& rm -rf /tmp/* \
+	&& apt-get remove --purge -y $BUILDDEPS \
+	&& apt-get autoremove -y \
+	&& apt-get autoclean -y \
+	&& rm -rf /var/lib/apt/lists/* 
 
 # Download and install shiny server
 RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION -O "version.txt" && \
@@ -23,29 +30,7 @@ RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION 
     rm -f version.txt ss-latest.deb && \
     . /etc/environment && \
     R -e "install.packages(c('shiny', 'rmarkdown'), repos='$MRAN')" && \
-    chown shiny:shiny /var/lib/shiny-server && \
-	rm -rf /tmp/*
-
-# Download and install R package dependancies
-RUN apt-get update -qq && apt-get -y --no-install-recommends install \
-	libxml2-dev \
-	libsqlite3-dev \
-	libmariadbd-dev \
-	libpq-dev \
-	libssh2-1-dev \
-	unixodbc-dev \
-	libcurl4-openssl-dev \
-	libssl-dev \
-	## for R package  magick
-	libmagick++-dev \
-	## for R package summarytools
-	libudunits2-dev libgdal-dev tcl8.6-dev tk8.6-dev \ 
-	## for R package V8
-	libv8-dev \
-	## for R package jqr
-	libjq-dev \
-	## for R package protolite
-	libprotobuf-dev protobuf-compiler \
+    chown shiny:shiny /var/lib/shiny-server \
 	## clean up install files
 	&& cd / \
 	&& rm -rf /tmp/* \
@@ -54,8 +39,14 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
 	&& apt-get autoclean -y \
 	&& rm -rf /var/lib/apt/lists/* 
 
-# Download and install R packages and suggested dependencies from csv ENV variable REQUIRED_PACKAGES_PLUS
+# Download and install R package dependancies
+ARG REQUIRED_PACKAGES=
 ARG REQUIRED_PACKAGES_PLUS=
+COPY install_package_dependencies.sh /usr/bin/install_package_dependencies.sh
+RUN chmod +x /usr/bin/install_package_dependencies.sh
+RUN /usr/bin/install_package_dependencies.sh $REQUIRED_PACKAGES $REQUIRED_PACKAGES_PLUS
+
+# Download and install R packages and suggested dependencies from csv ENV variable REQUIRED_PACKAGES_PLUS
 RUN install2.r \
 	--error \
     --deps TRUE \
@@ -68,9 +59,6 @@ RUN install2.r \
 	&& rm -rf /tmp/*
 
 # Download and install R packages from csv ENV variable REQUIRED_PACKAGES
-ARG REQUIRED_PACKAGES=
-
-
 RUN install2.r \
 	--error \
 	--ncpus -1 \
