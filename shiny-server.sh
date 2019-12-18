@@ -35,6 +35,14 @@ fi
 mkdir -p $WWW_DIR
 chown $SHINY_USER.$SHINY_GROUP -R $WWW_DIR
 
+if [ -z "${GITHUB_DIR}" ]; then
+    echo "GITHUB_DIR not specified, shiny server run as default value: $WWW_DIR"
+    export GITHUB_DIR=$WWW_DIR
+fi
+mkdir -p $GITHUB_DIR
+chown $SHINY_USER.$SHINY_GROUP -R $GITHUB_DIR
+
+
 if [ -z "${OUTPUT_DIR}" ]; then
     echo "OUTPUT_DIR not specified, shiny server run as default value: /04_output"
     export OUTPUT_DIR=/srv/shiny-server/output
@@ -56,8 +64,8 @@ printenv > $RENV
 if [ ! -z "${SHINYCODE_GITHUB_REPO}" ];
 then
     echo "Copying contentes of github repo $SHINYCODE_GITHUB_REPO to $WWW_DIR"
-    git clone $SHINYCODE_GITHUB_REPO $WWW_DIR
-    chown $SHINY_USER.$SHINY_GROUP -R $WWW_DIR
+    git clone $SHINYCODE_GITHUB_REPO $GITHUB_DIR
+    chown $SHINY_USER.$SHINY_GROUP -R $GITHUB_DIR
 else
     if [ "$(ls -A $WWW_DIR)" ]; then
         echo "Shiny web root dir $WWW_DIR successfully mapped to local path"
