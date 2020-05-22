@@ -44,7 +44,7 @@ ARG REQUIRED_PACKAGES=
 ARG REQUIRED_PACKAGES_PLUS=
 COPY install_package_dependencies.sh /usr/bin/install_package_dependencies.sh
 RUN chmod +x /usr/bin/install_package_dependencies.sh
-RUN /usr/bin/install_package_dependencies.sh $REQUIRED_PACKAGES $REQUIRED_PACKAGES_PLUS
+RUN /usr/bin/install_package_dependencies.sh shiny,rmarkdown,remotes $REQUIRED_PACKAGES $REQUIRED_PACKAGES_PLUS
 
 # Download and install R packages and suggested dependencies from csv ENV variable REQUIRED_PACKAGES_PLUS
 RUN install2.r \
@@ -55,16 +55,17 @@ RUN install2.r \
 	shiny \
 	rmarkdown \
 	remotes \
-	`echo $REQUIRED_PACKAGES_PLUS |  sed 's/,/ /g'` \
+#	`echo $REQUIRED_PACKAGES_PLUS |  sed 's/,/ /g'` \
 	&& rm -rf /tmp/*
 
 # Download and install R packages from csv ENV variable REQUIRED_PACKAGES
-RUN install2.r \
-	--error \
-	--ncpus -1 \
-    --skipinstalled \
-	`echo $REQUIRED_PACKAGES |  sed 's/,/ /g'` \
-	&& rm -rf /tmp/*
+#RUN install2.r \
+#	--error \
+#	--ncpus -1 \
+#    --skipinstalled \
+#	`echo $REQUIRED_PACKAGES |  sed 's/,/ /g'` \
+#	&& rm -rf /tmp/*
+
 
 # install rstudion/httpuv to enable compatibility with google cloud run https://github.com/rstudio/shiny/issues/2455
 RUN R -e "remotes::install_github(c('rstudio/httpuv'))"
@@ -98,6 +99,9 @@ COPY shiny-server.sh /usr/bin/shiny-server.sh
 RUN chmod +x /usr/bin/shiny-server.sh
 #COPY entrypoint.sh /usr/bin/entrypoint.sh
 #RUN chmod +x /usr/bin/entrypoint.sh 
+
+# Download and install R package dependancies for packages that failed in first install run
+RUN Rscript -e "source('/etc/shiny-server/install_discovered_packages.R'); discover_and_install(discovery_directory_root = '${WWW_DIR}', discovery = TRUE);" 
 
 ## create directories for mounting shiny app code / data
 ARG PARENT_DIR=/srv/shiny-server

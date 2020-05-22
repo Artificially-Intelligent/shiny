@@ -25,9 +25,9 @@ if [[ $R_PACKAGES == *"redux"* ]] ; then
    PACKAGE_DEPENDENCIES="$PACKAGE_DEPENDENCIES libhiredis-dev "; 
     echo "adding dependencies for redux"
 fi 
-if [[ $R_PACKAGES == *"zzzzz"* ]] ; then 
+if [[ $R_PACKAGES == *"xml2"* ]] || [[ $R_PACKAGES == *"tidyverse"* ]] ; then 
    PACKAGE_DEPENDENCIES="$PACKAGE_DEPENDENCIES libxml2-dev "; 
-    echo "adding dependencies for tba"
+    echo "adding dependencies for xml2"
 fi
 if [[ $R_PACKAGES == *"zzzzz"* ]] ; then
    PACKAGE_DEPENDENCIES="$PACKAGE_DEPENDENCIES libsqlite3-dev "; 
@@ -53,12 +53,15 @@ if [[ $R_PACKAGES == *"zzzzz"* ]] ; then
    PACKAGE_DEPENDENCIES="$PACKAGE_DEPENDENCIES libcurl4-openssl-dev "; 
     echo "adding dependencies for tba"
 fi
-if [[ $R_PACKAGES == *"zzzzz"* ]] ; then
+if [[ $R_PACKAGES == *"shiny"* ]] ; then
    PACKAGE_DEPENDENCIES="$PACKAGE_DEPENDENCIES libssl-dev "; 
-    echo "adding dependencies for tba"
+    echo "adding dependencies for shiny"
+fi
+if [[ $R_PACKAGES == *"sf"* ]] ; then
+   PACKAGE_DEPENDENCIES="$PACKAGE_DEPENDENCIES libudunits2-dev libgdal-dev gdal-bin libproj-dev proj-data proj-bin libgeos-dev libmariadbclient-dev default-libmysqlclient-dev libmysqlclient-dev "; 
+    echo "sf"
 fi
 
-PACKAGE_DEPENDENCIES="$PACKAGE_DEPENDENCIES libssl-dev ";
 
 echo "installing package dependencies: $PACKAGE_DEPENDENCIES"
 

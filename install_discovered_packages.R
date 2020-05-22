@@ -5,7 +5,7 @@ library(readr);
 library(stringr);
 
 
-discover_and_install <- function(default_packages_csv = '/no/file/selected', discovery_directory_root = '/02_code', discovery = FALSE, repos = 'https://cran.rstudio.com/'){
+discover_and_install <- function(default_packages_csv = '/no/file/selected', discovery_directory_root = '/srv/shiny-server/www', discovery = FALSE, repos = 'https://cran.rstudio.com/'){
   
   if(file.exists(default_packages_csv)){
     default_packages <- unique(read_csv(default_packages_csv)[["packages"]])
@@ -19,6 +19,14 @@ discover_and_install <- function(default_packages_csv = '/no/file/selected', dis
                 paste(required_packages, collapse = ",") , ")",sep = ""))
   }else{
     required_packages <- c()
+  }
+  
+  if(nchar(Sys.getenv('FAILED_PACKAGES')) > 0){
+    prev_failed_packages <- unique(str_split(Sys.getenv('FAILED_PACKAGES'),",")[[1]])
+    print(paste("Adding csv entries from ENV variable FAILED_PACKAGES to list of packages to install: (", 
+                paste(prev_failed_packages, collapse = ",") , ")",sep = ""))
+  }else{
+    prev_failed_packages <- c()
   }
   
   if(nchar(Sys.getenv('REQUIRED_PACKAGES_PLUS')) > 0){
@@ -80,13 +88,14 @@ discover_and_install <- function(default_packages_csv = '/no/file/selected', dis
     print(paste("Packages discovered in *.R files: (", paste(discovered_packages, collapse = ",") , ")",sep = ""))
   }
 
-  packages_to_install <- unique(c(default_packages, required_packages, discovered_packages))
+  packages_to_install <- unique(c(default_packages, required_packages, discovered_packages, prev_failed_packages))
   packages_to_install <- packages_to_install[!(packages_to_install %in% installed.packages()[,"Package"])]
 
+  failed_packages <- c()
   if(length(packages_to_install)>0){
     print(paste("Packages to be installed (", paste(packages_to_install, collapse = ",")   , ")" ,sep = ""))
     for(package_name in packages_to_install){
-      try(
+      tryCatch(
         {
           if(length(package_name[!(package_name %in% installed.packages()[,"Package"])]) > 0){
             print(paste("Installing package: ", package_name ,sep = ""))
@@ -99,12 +108,24 @@ discover_and_install <- function(default_packages_csv = '/no/file/selected', dis
           }else{
             print(paste("Skipping previously installed package: ", package_name ,sep = ""))
           }
-        },FALSE
+        }, 
+        error=function(cond) {
+          failed_packages <- c(failed_packages,package_name)
+          message(paste("Failed to install:", package_name))
+          message("Here's the original error message:")
+          message(cond)
+        }
+        
       )
     }
   }else{
     print("There are no packages to be installed")
   }
   print(paste("Installed packages:",paste(installed.packages()[,"Package"],collapse = ",")))
+  if(length(failed_packages) > 0){
+    print(paste("Packages that failed to install:",paste(failed_packages,collapse = ",")))
+    # Write falied package list to env variable
+    Sys.setenv(FAILED_PACKAGES = paste( unique(failed_packages),collapse = ","))
+  }
 }
 
